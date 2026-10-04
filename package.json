@@ -1,0 +1,32 @@
+{
+  "name": "@jboltai/tokui-skill",
+  "version": "0.2.7",
+  "description": "Standalone Agent Skill: render data & analysis as rich interactive UI with TokUI DSL — works in Claude Code, TokUI-Agent, and any agent supporting the Agent Skills standard",
+  "type": "module",
+  "license": "MIT",
+  "keywords": [
+    "agent-skills",
+    "claude-code",
+    "claude",
+    "skill",
+    "tokui",
+    "report",
+    "dashboard",
+    "visualization",
+    "dsl"
+  ],
+  "files": [
+    "skills",
+    "tools",
+    "README.md",
+    "README.zh-CN.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node --test \"test/**/*.test.mjs\"",
+    "build:references": "node tools/build-references.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
