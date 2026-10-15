@@ -74,7 +74,7 @@
 - **loading/empty**:服务端先推 `[table loading]` 占位(骨架覆盖)再逐行推;`[upd id:tbl loading:false]` 撤除;无数据 `[table empty]` 空态占位(行到达自动隐藏)。
 - **行点击**:`[tr 数据… clk:onRowClick]` → 上报 `{index, row:[整行文本]}`(整行数据载荷,不经泛化 clk 通道)。
 - **树形行**:`[tr 华东大区,128 id:r1][tr 技术研发,64 pid:r1 id:r2][tr 前端组,24 pid:r2]`——子行默认折叠、按 pid 链缩进(深度自适应),父行首格 CSS 三角展开钮;`[upd id:r1 act:expand]` 程序化展开。孙行随其父行状态(展开父不等于展开孙)。
-- **分页 payload**:`page` 事件 `{page,size,filter,sort}`(value 兼容)——后端分页范式:`onPage` handler 里 del 旧行 + ins 新行(见 TokUI DSL 参考「翻页事件→宿主重渲」)。
+- **分页 payload**:`page` 事件 `{page,size,filter,sort}`(value 兼容)——动态重渲范式:`onPage` handler 里 del 旧行 + ins 新行(upd/del/ins 动态指令见 SKILL.md 动态与交互)。
 
 ```
 [table fixed fc:1 stripe][thead cols:"物料 w:170,规格 w:210,库存 w:100/r,操作 w:160/r"][tbody]

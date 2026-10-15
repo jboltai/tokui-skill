@@ -1,4 +1,4 @@
-// TokUI component knowledge base — single source of truth for tokui_docs + dsl-lint.
+// TokUI component knowledge base — single source of truth for the generated components.md + dsl-lint.
 // Distilled from TokUI v0.2.6 authoritative reference (TokUI/demo/TOKUI_DSL_REFERENCE.md,
 // synced through 724d0cd: data-* passthrough + handler "?k=v" inline params + a(clk) event link).
 // Keep in sync when @jboltai/tokui is upgraded.
@@ -20,9 +20,9 @@ export const COMPONENTS = {
   "preview-group": { f: "text", d: "容器 | id | 子 img 共享灯箱预览会话(缩放/旋转/计数/切换)" },
   hr: { f: "text", d: "自闭合 | 水平分割线" },
   dv: { f: "text", d: "自闭合 | 裸内容/tx v vert align bg th plain | 带文本分割线;v:vert 垂直" },
-  md: { f: "text", d: "容器·原始 | Markdown 渲染(表格/列表/任务/引用/代码围栏)。⚠本宿主未加载 mermaid/katex 插件——md 内 ```mermaid 围栏与 $$公式$$ 只会以源码回退显示,禁用;流程/结构关系改用 chart(t:sankey/gantt)/timeline,公式用普通文本(上下标 sub/sup)" },
-  katex: { f: "text", d: "容器·原始/自闭合 | f:公式 | ⚠本宿主未加载 katex 插件——公式只会显示原始 LaTeX 源码,禁用;公式用普通文本表达(上下标 sub/sup、符号直接写)" },
-  mermaid: { f: "text", d: "容器·原始 | ⚠本宿主未加载 mermaid 插件——图源只会以代码块回退显示,禁用;流程/时序/结构图改用 chart(t:sankey/gantt/treemap)、timeline、tabs+list 组合表达" },
+  md: { f: "text", d: "容器·原始 | Markdown 渲染(表格/列表/任务/引用/代码围栏)。⚠内置运行时未加载 mermaid/katex 插件——md 内 ```mermaid 围栏与 $$公式$$ 只会以源码回退显示,禁用;流程/结构关系改用 chart(t:sankey/gantt)/timeline,公式用普通文本(上下标 sub/sup)" },
+  katex: { f: "text", d: "容器·原始/自闭合 | f:公式 | ⚠内置运行时未加载 katex 插件——公式只会显示原始 LaTeX 源码,禁用;公式用普通文本表达(上下标 sub/sup、符号直接写)" },
+  mermaid: { f: "text", d: "容器·原始 | ⚠内置运行时未加载 mermaid 插件——图源只会以代码块回退显示,禁用;流程/时序/结构图改用 chart(t:sankey/gantt/treemap)、timeline、tabs+list 组合表达" },
   code: { f: "text", d: "容器·原始 | lang | 高亮代码块+复制+行号;lang: js/ts/py/html/css/sql/json/java/go/rust/bash" },
   tag: { f: "text", d: "自闭合 | tx t s round bordered closable dis bg fc | 标签;颜色 t: default/primary/success/warning/danger/info;s:small/medium/large" },
   kbd: { f: "text", d: "自闭合 | 裸内容/tx | 键帽;变体 sm/lg" },
@@ -89,7 +89,7 @@ export const COMPONENTS = {
   "tool-call": { f: "ai", d: "容器 | name status duration id approval collapsed clk | 工具调用卡片 status:pending/running/done/error/denied;approval+pending 渲染批准/拒绝(HITL);upd 支持 status/duration/result/error" },
   typing: { f: "ai", d: "自闭合 | text | 输入中指示(注意是 text 不是 tx)" },
   "chat-input": { f: "ai", d: "容器 | ph clk dis max auto rows streaming mention on id | 对话输入框:Enter 发送/Shift+Enter 换行,发送触发 clk(负载 {value})或统一出口 send;streaming 显停止钮(on:\"stop:h\" 或默认断流);mention:数据源handler 启用 @ 提及;id 落 DOM,[upd id:x dis/streaming] 全通路生效" },
-  "msg-actions": { f: "ai", d: "容器 | clk copy regenerate like delete visible | 消息操作栏;布尔属性生成默认图标钮(copy 复制/regenerate 重生成/like 赞+踩/delete 删除),点击发 action 事件负载 {act}。⚠默认钮非前端行为,宿主须桥接 action/clk 才有回路——本宿主统一出口只转发 select/send/approval,用默认钮必须带 clk:名" },
+  "msg-actions": { f: "ai", d: "容器 | clk copy regenerate like delete visible | 消息操作栏;布尔属性生成默认图标钮(copy 复制/regenerate 重生成/like 赞+踩/delete 删除),点击发 action 事件负载 {act}。⚠默认钮非前端行为,点击经事件通道外发、静态报告无回路——用默认钮必须带 clk:名" },
   "quick-reply": { f: "ai", d: "容器 | items clk | 快捷回复 items 逗号标签" },
   suggestions: { f: "ai", d: "容器 | cols clk id | 建议卡片网格 cols 1-4;子项 suggestion" },
   suggestion: { f: "ai", d: "自闭合 | tt tx clk icon dis | 建议项" },
@@ -145,8 +145,8 @@ export const COMPONENTS = {
   tab: { f: "layout", d: "容器 | tt | tabs 子项" },
   accordion: { f: "layout", d: "容器 | — | 手风琴,子项 collapse" },
   collapse: { f: "layout", d: "容器 | tt open id | 折叠面板;upd act:open/close" },
-  dialog: { f: "layout", d: "容器 | tt id clk w | 对话框;upd act:open/close;w:弹窗宽px(480~1200 落 max-width,默认480,编辑表单 cols:2/transfer 用 w:720)。⚠本宿主未桥接打开:渲染后打不开,常规报告禁用——需要折叠/分层内容用 collapse(用户可点)或 tabs 替代" },
-  drawer: { f: "layout", d: "容器 | tt pos w h id | 抽屉 pos:left/right/top/bottom。⚠同 dialog:本宿主打不开,禁用;侧栏内容用 tabs/collapse 替代" },
+  dialog: { f: "layout", d: "容器 | tt id clk w | 对话框;upd act:open/close;w:弹窗宽px(480~1200 落 max-width,默认480,编辑表单 cols:2/transfer 用 w:720)。⚠静态报告无触发通路:渲染后打不开,常规报告禁用——需要折叠/分层内容用 collapse(用户可点)或 tabs 替代" },
+  drawer: { f: "layout", d: "容器 | tt pos w h id | 抽屉 pos:left/right/top/bottom。⚠同 dialog:静态报告打不开,禁用;侧栏内容用 tabs/collapse 替代" },
   timeline: { f: "layout", d: "容器 | v | 时间轴 v:h/horizontal/alt/card;子项 ti(自闭合,正文写标签内,禁 [/ti])" },
   ti: { f: "layout", d: "自闭合 | tm t tt 裸内容 | 时间轴项 t:primary/success/warning/error/info。⚠没有 [/ti]!正文=开标签属性后的裸文本,与标签同一行:[ti tm:\"2024 下半年\" t:info tt:\"v1.x 首发\" 平台基础版发布,确立工程化定位]。tm/tt 含空格必须引号;正文一句流文本,不能含 ](含 [ ] 用引号包该词),不能换行分段;正文别出现 英文:值 词(会被吃成属性)" },
   steps: { f: "layout", d: "容器 | v s vd id | 步骤条 v=当前步(1-based,值语义);vd:v 竖排;子项 step(自闭合,正文写标签内,禁 [/step])" },
@@ -170,7 +170,7 @@ export const COMPONENTS = {
   "print-area": { f: "layout", d: "容器 | id tt | 打印区,配合 [btn print:ID] 1:1 打印" },
 
   // ── form 表单 ──
-  form: { f: "form", d: "容器 | act mtd sub clk id cols lw gap v:inline | 提交前执行 reportValidity(req/pat 拦截);sub=提交处理器。⚠末尾必带提交+重置两按钮,直接放 form 内(勿用 [ft]):[btn tx:提交 v:primary sub:formSubmit](数据以用户消息回传)+[btn tx:重置 reset](前端清空);提交用 sub 不用 clk(clk 绕过校验);字段 l:中文标签 n:英文key 必填 req。M2 布局:cols:1~4 字段网格/lw 标签统一宽(40~320)/gap 间距/v:inline 过滤条(与cols同写cols优先);字段 v:full 跨整行(全字段类型);编辑资料默认 cols:2 lw:84 起步。编辑回填(M2):dialog 常驻→逐字段 upd(input/select/radio v:值;datepicker v:2024-06-01;time·datetimepicker v:\"09:30\";cascader v:\"gd/gz\" 路径校验;transfer v:\"1,2\" 右栏重排;upload act:fill files:\"名,url,大小|…\")" },
+  form: { f: "form", d: "容器 | act mtd sub clk id cols lw gap v:inline | 提交前执行 reportValidity(req/pat 拦截);sub=提交处理器。⚠末尾必带提交+重置两按钮,直接放 form 内(勿用 [ft]):[btn tx:提交 v:primary sub:formSubmit]+[btn tx:重置 reset](前端清空);提交用 sub 不用 clk(clk 绕过校验);字段 l:中文标签 n:英文key 必填 req。M2 布局:cols:1~4 字段网格/lw 标签统一宽(40~320)/gap 间距/v:inline 过滤条(与cols同写cols优先);字段 v:full 跨整行(全字段类型);编辑资料默认 cols:2 lw:84 起步。编辑回填(M2):dialog 常驻→逐字段 upd(input/select/radio v:值;datepicker v:2024-06-01;time·datetimepicker v:\"09:30\";cascader v:\"gd/gz\" 路径校验;transfer v:\"1,2\" 右栏重排;upload act:fill files:\"名,url,大小|…\")" },
   input: { f: "form", d: "自闭合 | l ph id n val ml req dis ro w hint pat err ok live search v pre/app/prebtn/appbtn rule msg sug db t | val 存初值(v 是变体);t:email 才有邮箱格式校验(t:text/缺省只查非空);rule:\"required|email|len:6\" DSL 校验;live 实时校验;search 图标;pre:¥ 前置" },
   pwd: { f: "form", d: "自闭合 | 同 input + toggle | 密码框;toggle 显隐" },
   textarea: { f: "form", d: "容器 | l id n ph rows maxlen maxrows auto tx req | 多行输入。⚠与 input 不同,不自闭合:初始值用 tx: 自闭合([textarea n:note ph:提示 tx:默认值])或容器式写在标签间([textarea n:note]默认值[/textarea]);**空字段也必须 [/textarea] 闭合**,漏闭合会吞掉后续表单控件。auto 自适应高度" },
@@ -200,14 +200,16 @@ export const COMPONENTS = {
   thead: { f: "table", d: "容器/自闭合 | cols | cols:\"姓名 w:140,年龄\";# 序号列 chk 全选列;; 分多行;列名后 /c /r /l 对齐 /primary 等配色;M2 列宽 `名称 w:180`(24~2000,可与对齐组合 `金额 w:120/r`,th 显式宽传导 body 列,固定列必配);带 cols 自闭合" },
   tbody: { f: "table", d: "容器 | — | 表体" },
   tr: { f: "table", d: "自闭合 | 逗号分隔单元格 v:total id pid clk | ⚠btn:/tag:/progress v:/[xxx] 内联组件格裸写即可(空格子属性已归位到单元格,多钮|分隔、格内勿含英文逗号;行级 id:/pid: 写行首);货币符号金额(¥$€)千分位免引号;cell 尾缀 =cN/=rN 合并;v:total 汇总行;M2:clk:handler 行点击上报 {index,row[]};id+pid:父行id 树形行(子行折叠+缩进+父行展开钮,upd id:父行 act:expand/collapse)。详见 references/table.md" },
-  // ── dashboard 大屏组件（M1）──
-  panel: { f: "layout", d: "容器 | tt v(corner/glow/plain) theme | 科技边框容器(大屏面板);theme:tech 子树切科技风" },
-  kpi: { f: "layout", d: "容器 | tt v(数值) pre suf unit trend dec icon clk t | 指标卡:数值滚动动画,trend:12.4/-1.2 自动↑↓徽章,t:danger/success/warning 状态色,[upd id: v:/trend:] 更新走动画" },
+  // ── dashboard 大屏组件（M1 + 大屏专业化）──
+  panel: { f: "layout", d: "容器 | tt sub extra v(corner/glow/plain/scan) theme | 科技边框容器(大屏面板);sub 英文副标题,extra:'转化率 {9.8%}' 右侧信息({段}高亮);v:corner 四角角标/glow 发光/scan 扫描线(可逗号组合 v:'corner,scan');theme:tech 子树科技风(hover 抬升+标题栏渐变底)" },
+  kpi: { f: "layout", d: "容器 | tt v(数值) pre suf unit trend dec icon pct clk t | 指标卡:数值滚动动画,trend:12.4/-1.2 自动↑↓徽章,pct:78 底部完成度光条,t:danger/success/warning 状态色,[upd id: v:/trend:/pct:] 更新走动画;tech 主题大数字 display 字体+辉光" },
+  "screen-header": { f: "layout", d: "自闭合 | tt sub lft rgt clock live h theme | 大屏门头:tt 渐变主标题(34px 字距8px 辉光)/sub 英文副题/lft·rgt 左右信息胶囊/clock 右端走动时钟+日期/live LIVE 呼吸灯/h 高度默认92(48-240);底缘主色渐变分隔线;整页大屏以它开头替代裸 h1" },
+  "rank-list": { f: "layout", d: "容器 | rows unit top av h speed clk theme | 龙虎榜:rows:'名,区域,值|…'(首列名 末列值 中间列合并副文本)简写自闭合;无 rows 容器收 tr 子节点;top:3 前三名渐变奖牌(金橙/青蓝/紫,默认3);av 首字渐变头像;unit 值后缀;h 视口高内容超高自动无缝上滚(hover暂停);排行榜场景用它勿用 scrollboard 裸表" },
   "flip-num": { f: "layout", d: "自闭合 | v(数字串含逗号/%) dur s(sm/lg) | 逐位3D翻牌;upd v: 各位滚到位" },
   "fit-screen": { f: "layout", d: "容器 | w h mode(scale/width/full) maxh | 大屏缩放容器:1920×1080 设计稿等比适配,scale/full 挂载区需定高;mode:scale 居中留空(默认)/width 等宽贴合内容高,maxh:视口高上限后超高纵滚/full 拉伸;内部容器 h:100% 满幅排版防画布留白" },
-  scrollboard: { f: "layout", d: "容器 | h speed gap cols rows clk | 轮播榜单:rows:'a,1,↑2|b,2,↓3' 简写或 tr 子节点;↑↓自动着色;hover暂停无缝循环;speed:0 静止" },
+  scrollboard: { f: "layout", d: "容器 | h speed gap cols rows clk | 轮播榜单:rows:'a,1,↑2|b,2,↓3' 简写或 tr 子节点;↑↓自动着色;胶囊格 tag:类型:文本(如 tag:success:已签约);hover暂停无缝循环;speed:0 静止" },
   // ── page 应用壳（M2/T2.1）──
-  page: { f: "layout", d: "容器 | w(140~480 侧栏宽默认240) theme | 后台应用壳:grid areas 三区(header横贯顶/sidebar+content两列);直系子元素只写三件套 page-header/page-sidebar/page-content(其余落主区属兜底非规范);宿主有定高自动铺满否则按内容" },
+  page: { f: "layout", d: "容器 | w(140~480 侧栏宽默认240) theme | 后台应用壳:grid areas 三区(header横贯顶/sidebar+content两列);直系子元素只写三件套 page-header/page-sidebar/page-content(其余落主区属兜底非规范);外层容器有定高自动铺满否则按内容" },
   "page-header": { f: "layout", d: "容器 | tt bc sticky | 页头:bc:'首页,系统,用户' 逗号分级面包屑(末项自动当前页);sticky 吸顶;子节点(btn等)落右侧动作插槽;upd id: tt:/bc: 就地更新" },
   "page-sidebar": { f: "layout", d: "容器 | tt | 侧栏:品牌行+折叠钮(联动 page 列宽 240⇄64)+滚动主体;toggle 上报 {folded};菜单联动:menu change 载荷 {value,item,path},一条 upd id:header bc: 即同步面包屑" },
   "page-content": { f: "layout", d: "容器 | — | 主区薄包装:纵列+自滚动+裁剪防护,列表/表单/详情直接放" },
@@ -218,7 +220,7 @@ export const COMPONENTS = {
   tcol: { f: "table", d: "自闭合 | n | 列占位(thead 无 cols 时)" },
 
   // ── chart 图表 ──
-  chart: { f: "chart", d: "容器/自闭合 | t tt d l c w h v ... | ⚠属性顺序铁律 t→样式→l→d;系列色默认随主题色板自动切换(T0.5,暗色自动提亮,无需手动 c:),仅特殊品牌色才写 c:;grad 布尔=渐变填充(bar/area/donut);enter:'false' 关入场动画;21 种类型 t:bar/line/area/pie/donut/rose/funnel/radar/scatter/bubble/heatmap/histogram/waterfall/boxplot/treemap/sankey/candlestick/progress/gauge/map(中国地图:region:'浙江:86|江苏:74' 省级热力 34省含港澳台+d:'lng,lat,val,name:城市' 散点;label:full|name|off 标注三档;unit 单位;hover多行tooltip+高亮;点击省份 on:'mapClick:handler' 上报;vmin/vmax 锁色阶+自带 visualMap 色阶条/南海诸岛小图);无 d 时容器模式收 pt/hrow/flow/task/ms。完整数据格式见 references/chart.md" },
+  chart: { f: "chart", d: "容器/自闭合 | t tt d l c w h v ... | ⚠属性顺序铁律 t→样式→l→d;系列色默认随主题色板自动切换(T0.5,暗色自动提亮,无需手动 c:),仅特殊品牌色才写 c:;grad 布尔=渐变填充(bar/area/donut);enter:'false' 关入场动画;22 种类型 t:bar/line/area/pie/donut/rose/funnel/radar/scatter/bubble/heatmap/histogram/waterfall/boxplot/treemap/sankey/candlestick/progress/gauge/map/combo;map(中国地图:region:'浙江:86|江苏:74' 省级热力 34省含港澳台+d:'lng,lat,val,name:城市' 散点 值TOP12自动涟漪(ripple:off 关);topn:5 左下自动区域TOP榜;label:full|name|off 标注三档;unit 单位;hover多行tooltip+高亮;点击省份 on:'mapClick:handler' 上报;vmin/vmax 锁色阶+自带 visualMap 色阶条/南海诸岛小图);combo(双轴组合图:d 柱左轴+d2 线右轴+n1/n2 系列名+y2 右轴单位,趋势+增速面板标配);无 d 时容器模式收 pt/hrow/flow/task/ms。完整数据格式见 references/chart.md" },
   pt: { f: "chart", d: "自闭合 | v | chart 容器模式点子节点" },
   hrow: { f: "chart", d: "自闭合 | v | heatmap 行子节点 v,v,v" },
   flow: { f: "chart", d: "自闭合 | v | sankey 子节点 源->目标:值" },
@@ -241,23 +243,23 @@ export const CONTAINERS = new Set((
   "sidebar sidebar-content sidebar-footer command command-group hover-card hover-trigger hover-content " +
   "resizable canvas canvas-content chart ins katex mermaid p tour affix preview-group segmented anchor float-button masonry " +
   // 大屏四件套 + 缩放容器（T1.2/T1.3）——此前缺席致大屏 DSL 结构校验失明
-  "panel kpi scrollboard fit-screen" +
+  "panel kpi rank-list scrollboard fit-screen" +
   // 应用壳六件套（M2/T2.1）
   " page page-header page-sidebar page-content page-tabs page-tab"
   // 滚动入场（T3.2）
   + " reveal reveal-item"
 ).split(/\s+/));
 
-// §5.1 全局属性(T0.1 样式定制通道 + T0.6 数据属性通道) — 对全部组件生效,落组件根元素;tokui_docs 可按名查
+// §5.1 全局属性(T0.1 样式定制通道 + T0.6 数据属性通道) — 对全部组件生效,落组件根元素;详情见 components.md 全局属性节
 export const GLOBAL_ATTRS = {
-  cls: "全局属性 | 自定义类名,空格分多个(含空格整个值双引号包) | 每个类名须 ^[a-zA-Z][\\w-]{0,63}$、拒 tokui- 前缀、上限 8 个去重;非法词静默丢弃。用于宿主 CSS 钩子(动画/精修)。例:[card tt:品牌卡 cls:\"pricing fade-in\"]",
+  cls: "全局属性 | 自定义类名,空格分多个(含空格整个值双引号包) | 每个类名须 ^[a-zA-Z][\\w-]{0,63}$、拒 tokui- 前缀、上限 8 个去重;非法词静默丢弃。用于自定义 CSS 钩子(动画/精修)。例:[card tt:品牌卡 cls:\"pricing fade-in\"]",
   style: "全局属性 | 白名单内联样式,落组件根元素 | 放行 background(-image/-color)/color/border(含圆角)/padding/margin/box-shadow/opacity/font-*/text-align/letter-spacing/line-height/max-min宽高/gap/flex族/align-justify/transform(仅translate/scale/rotate族)/backdrop-filter/aspect-ratio/object-fit/transition/z-index;url() 仅 http(s)/站内相对。**拒绝**(静默丢弃):position/top/left/right/bottom、expression()、javascript:、behavior:、@import、url(data:)/url(ftp:)、transform:matrix。例:[card style:\"background:linear-gradient(135deg,var(--tokui-primary-1),var(--tokui-bg));border-radius:16px\"]。违规声明静默丢弃,合法声明照常生效",
-  "data-*": "全局属性 | data- 开头属性原样透传到组件根元素(全组件),clk:/sub: handler 第三参 element 经 getAttribute/dataset 读取,事件携带自定义数据 | 例:[btn tx:删除 t:danger data-id:1024 data-scene:order-list clk:onDel]→el.dataset.id='1024'/el.dataset.scene='order-list'。**拒 data-tokui-***(框架内部印章:clk/sub/act/tag,防 DSL 伪造印章劫持事件分发,写了不透传);组件已手动落的同名属性不覆盖;值含空格整个值双引号包;表格行另有简写 tr d:\"k:v k2:v2\"(自动加 data- 前缀落行元素)。轻量上下文优先 clk:\"h?k=v\" 内联参数(查 tokui_docs clk)",
+  "data-*": "全局属性 | data- 开头属性原样透传到组件根元素(全组件),clk:/sub: handler 第三参 element 经 getAttribute/dataset 读取,事件携带自定义数据 | 例:[btn tx:删除 t:danger data-id:1024 data-scene:order-list clk:onDel]→el.dataset.id='1024'/el.dataset.scene='order-list'。**拒 data-tokui-***(框架内部印章:clk/sub/act/tag,防 DSL 伪造印章劫持事件分发,写了不透传);组件已手动落的同名属性不覆盖;值含空格整个值双引号包;表格行另有简写 tr d:\"k:v k2:v2\"(自动加 data- 前缀落行元素)。轻量上下文优先 clk:\"h?k=v\" 内联参数(详查 components.md 事件通道 clk)",
 };
 
-// §8 事件通道(724d0cd 增强) — clk:/sub:/on: 处理器引用;tokui_docs 可按名查
+// §8 事件通道(724d0cd 增强) — clk:/sub:/on: 处理器引用;详情见 components.md 事件通道节
 export const EVENT_CHANNELS = {
-  clk: "事件通道 | 点击处理器名,需宿主 registerHandler 注册(本宿主已桥接 clk:→以用户消息回传) | 处理器引用可带查询串内联参数:clk:\"onDel?id=1024&scene=order-list\"——'?' 后按 '&' 分段,段内首个 '=' 分 k/v,值一律字符串(URL decode,空格写 %20),无 '=' 的段=布尔 true;参数直接进 handler 第一参(无需从 DOM 读);与表单数据共存时合并进同一对象、同名键内联参数优先;参数键 __proto__/constructor/prototype 被拒;无 '?' 时行为与旧版一致。也可配 data-* 属性把数据落根元素、handler 第三参 element 读取",
+  clk: "事件通道 | 点击处理器名,需运行时 registerHandler 注册——静态 HTML 报告无 handler,点击不上报(按钮仅视觉示意) | 处理器引用可带查询串内联参数:clk:\"onDel?id=1024&scene=order-list\"——'?' 后按 '&' 分段,段内首个 '=' 分 k/v,值一律字符串(URL decode,空格写 %20),无 '=' 的段=布尔 true;参数直接进 handler 第一参(无需从 DOM 读);与表单数据共存时合并进同一对象、同名键内联参数优先;参数键 __proto__/constructor/prototype 被拒;无 '?' 时行为与旧版一致。也可配 data-* 属性把数据落根元素、handler 第三参 element 读取",
   sub: "事件通道 | 表单提交处理器名(提交前走原生校验 req/pat;提交必须用 sub 不用 clk) | 同 clk 支持内联参数:sub:\"onLogin?src=header\"——表单收集数据与参数合并进同一对象,同名键内联参数优先(DSL 显式声明意图更强)",
   on: "事件通道 | 交互事件上报声明 on:\"事件:处理器\"(必须双引号,英文逗号分多对) | 处理器可带内联参数:on:\"change:onKw?src=header&draft\"(无 '=' 段=布尔 true);⚠参数值不能含英文逗号(',' 是事件对分隔符,在 decode 前拆断、残段被丢——写 %2C)也不能含裸 ':'(写 %3A);事件如 tabs/menu/switch/pagination change、dialog close、scroll-area loadmore、chart t:map 的 mapClick",
 };
@@ -271,7 +273,7 @@ export const BOOLEAN_ATTRS = new Set((
   "auto plain round closable bordered open pill dot leaf inline rounded container " +
   "copy regenerate like dislike visible delete controls active collapsible collapsed toggle " +
   "search thumb reset print show-total live approval streaming range half sortable filter " +
-  "virtual lazy pagination mask"
+  "virtual lazy pagination mask clock av smooth vals"
 ).split(/\s+/));
 
 // §4 变体白名单(渲染器校验,未知变体静默丢弃)
@@ -306,6 +308,7 @@ export const VARIANTS = {
   anchor: "horizontal",
   "scroll-area": "flush",
   kbd: "sm lg",
+  panel: "corner glow plain scan",
 };
 // 手动标记变体(不在渲染器白名单,组件自身解析)
 export const MANUAL_VARIANTS = {
@@ -317,7 +320,7 @@ export const MANUAL_VARIANTS = {
   steps: ["vd:v", "vertical"],
 };
 
-export const CHART_TYPES = new Set("bar line area pie donut rose funnel radar scatter bubble heatmap histogram waterfall boxplot treemap sankey candlestick progress gauge gantt map".split(" "));
+export const CHART_TYPES = new Set("bar line area pie donut rose funnel radar scatter bubble heatmap histogram waterfall boxplot treemap sankey candlestick progress gauge gantt map combo".split(" "));
 
 export const ICONS = new Set("view edit delete add copy download upload refresh check close search setting warn info lock unlock more save export filter sort star link menu".split(" "));
 
@@ -327,5 +330,5 @@ export const ALL_NAMES = new Set([
   "grid", "ins", "ol", "ul", "preview-group",
 ]);
 
-// 组件家族(用于 tokui_docs 按家族提示)
+// 组件家族(用于 components.md 按家族分组与 lint 提示)
 export const FAMILY_OF = new Map(Object.entries(COMPONENTS).map(([k, v]) => [k, v.f]));

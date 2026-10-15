@@ -87,27 +87,30 @@
 [/card]
 ```
 
-## 模式五:数据大屏(fit-screen + grid areas)
+## 模式五:数据大屏(fit-screen + screen-header + grid areas)
 
 铁律(违反即底行被裁/内容叠压,均由真实 bug 沉淀):
 
-1. **fit-screen 内的 grid 必带 `h:100%`**——缺省时 fr 行按内容解析,总高超设计稿后底行被画布裁剪。
-2. **rows「px 定头尾 + 1fr 弹性中段」**,行高按内容预算:裸 kpi 单排 110~130px;panel 包 kpi(标题头 40px)单排 ≥150px、2×2 ≥310px;**panel tt 与 kpi tt 勿重复**(双标题白耗 40px)。
-3. **定高格内禁用 `[row][col span]` 页面栅格**——用嵌套 `[grid cols:N]`;定高行内容一律包 `[panel]` 或嵌套 grid(自带裁剪;超高内容会被裁在本格,不叠压邻区)。
-4. **定高格内 chart 可省 w/h**——库自动按格位纵横比重绘铺满(显式 w/h 纵横比不符时也自适应;map 画布固定除外)。
-5. **kpi 状态色走 `t:primary/danger/success/warning`**——`v:` 只放数值(写 `v:warn` 会把字面量当数值显示)。
-6. 窄容器(对话流)用 `mode:width`,全屏画布才 `mode:scale`;theme 只挂 grid 一处子树继承。
+1. **整页大屏以 `[screen-header]` 开头**(自闭合,渐变标题+时钟+LIVE),替代裸 `h1 v:gradient`;首行高度=header 的 h(默认 92px)。
+2. **fit-screen 内的 grid 必带 `h:100%`**——缺省时 fr 行按内容解析,总高超设计稿后底行被画布裁剪。
+3. **rows「px 定头尾 + 1fr 弹性中段」**,行高按内容预算:裸 kpi 单排 110~130px;panel 包 kpi(标题头 40px)单排 ≥150px、2×2 ≥310px;**panel tt 与 kpi tt 勿重复**(双标题白耗 40px)。
+4. **定高格内禁用 `[row][col span]` 页面栅格**——用嵌套 `[grid cols:N]`;定高行内容一律包 `[panel]` 或嵌套 grid(自带裁剪;超高内容会被裁在本格,不叠压邻区)。
+5. **定高格内 chart 可省 w/h**——库自动按格位纵横比重绘铺满(显式 w/h 纵横比不符时也自适应;map 画布固定除外)。
+6. **kpi 状态色走 `t:primary/danger/success/warning`**——`v:` 只放数值(写 `v:warn` 会把字面量当数值显示);`pct:N` 加底部完成度光条。
+7. 窄容器(对话流)用 `mode:width`,全屏画布才 `mode:scale`;theme 只挂 grid 一处子树继承——**theme:tech 自动获得屏幕级氛围(光晕/网格/暗角/辉光),勿再手写 style 深色背景**。
+8. **选型**:排行榜用 `[rank-list]`(奖牌位),滚动明细用 `[scrollboard]`(胶囊格 `tag:类型:文本`);趋势对比用 `[chart t:combo]`(柱 d+线 d2 双轴)勿拆两图;地图 `topn:5` 自动区域 TOP 榜。
 
 ```
 [fit-screen w:1920 h:1080 mode:scale]
-[grid cols:"480px 1fr 400px" rows:"156px 1fr 300px" gap:12 h:100% areas:"kpi kpi kpi|map rank rank|trend trend trend" theme:tech]
+[grid cols:"480px 1fr 400px" rows:"92px 156px 1fr 300px" gap:12 h:100% areas:"head head head|kpi kpi kpi|map rank rank|trend trend trend" theme:tech]
+[cell area:head][screen-header tt:"生产运营指挥中心" sub:"OPERATIONS · REAL-TIME" lft:"数据源 MES" clock live][/cell]
 [cell area:kpi][grid cols:4 h:100%]
-[cell][panel v:corner][kpi tt:总产量 v:12846 unit:件 trend:12.4 icon:trending-up][/panel][/cell]
+[cell][panel v:corner][kpi tt:总产量 v:12846 unit:件 trend:12.4 pct:78 icon:trending-up][/panel][/cell]
 [cell][panel v:corner][kpi tt:告警 v:7 unit:件 trend:-3 t:danger icon:bell][/panel][/cell]
 [/grid][/cell]
-[cell area:map][panel tt:区域分布 v:corner][chart t:map region:"浙江:86|江苏:74" unit:%][/panel][/cell]
-[cell area:rank][panel tt:工单榜 v:glow][scrollboard h:520 cols:"线体,工单,环比" rows:"A线,128,↑12|B线,96,↓3"][/panel][/cell]
-[cell area:trend][panel tt:"近30日趋势" v:glow][chart t:area smooth grad l:"1日,2日,3日,4日,5日" d:"92,95,90,98,102"][/panel][/cell]
+[cell area:map][panel tt:区域分布 v:"corner,scan" sub:GEO][chart t:map region:"浙江:86|江苏:74" unit:% topn:5][/panel][/cell]
+[cell area:rank][panel tt:产线龙虎榜 v:glow sub:RANKING][rank-list rows:"陈亦然,一班,486|林思远,二班,432|赵沐阳,三班,398|周清和,一班,361" unit:件 top:3 av][/panel][/cell]
+[cell area:trend][panel tt:"产量与环比" v:glow][chart t:combo l:"1月,2月,3月,4月,5月,6月" d:"820,640,1080,1260,1150,1420" d2:"12.4,8.6,15.2,9.1,4.2,10.8" n1:产量 n2:环比 y2:% smooth][/panel][/cell]
 [/grid]
 [/fit-screen]
 ```
@@ -120,7 +123,7 @@
 2. header 的 `bc:"首页,系统,用户"` 是逗号分级面包屑(末项自动当前页);右侧动作(btn 等)直接作 header 子节点,无需额外容器。
 3. sidebar 主体放 `[menu act:键]`,菜单项 `id:` 即 key;`change` 载荷 `{value,item,path}`(path 标题路径数组),一条 `[upd id:headerId bc:新路径]` 即同步面包屑。
 4. 主区多页签 `[page-tabs act:key]`:子项 `[page-tab n:key tt:标题 closeable]`;点击上报 change、× 上报 close、`[upd id:tabsId act:key]` 静默切换、`[del id:tabId]` 整签移除;`dis` 页签不参与激活回落。
-5. 宿主容器有确定高度时 page 自动铺满;对话流内嵌按内容自然高,主区超高自滚动。
+5. 外层容器有确定高度时 page 自动铺满;对话流内嵌按内容自然高,主区超高自滚动。
 
 ```
 [page w:240]

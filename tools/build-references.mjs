@@ -57,7 +57,7 @@ for (const [k, v] of Object.entries(GLOBAL_ATTRS)) lines.push(`- **${k}** — ${
 lines.push("");
 lines.push("## 事件通道（clk / sub / on）");
 lines.push("");
-lines.push("宿主相关：TokUI-Agent 等实时宿主会把 clk/sub 事件桥接回会话变成新的用户消息；独立 HTML 报告里点击不上报（静态交付）。");
+lines.push("静态交付：生成的 HTML 报告里 clk/sub 点击不上报，按钮仅作视觉示意。");
 lines.push("");
 for (const [k, v] of Object.entries(EVENT_CHANNELS)) lines.push(`- **${k}:** — ${v}`);
 lines.push("");

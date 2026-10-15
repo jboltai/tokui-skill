@@ -2,24 +2,19 @@
 
 [中文文档](./README.zh-CN.md)
 
-**Render data & analysis as rich interactive UI — an Agent Skill that runs in Claude Code, TokUI-Agent, and any agent supporting the Agent Skills standard.**
+**Render data & analysis as rich interactive UI — a standalone Agent Skill that runs in Claude Code and any agent platform supporting the Agent Skills standard.**
 
 `tokui-render` teaches any capable agent the TokUI DSL: 150+ components — cards, 21 chart types, tables, forms, KPI dashboards, detail pages, full app shells — emitted as compact `[card tt:"Q3" tx:"…"]` markup instead of hand-written HTML.
 
-## Two delivery modes
+## How it works
 
-The skill detects its host and adapts:
-
-| Mode | Host | What happens |
-|---|---|---|
-| **A · Live** | TokUI-Agent and other TokUI-aware hosts | The agent streams ```tokui fences; the host renders them into real, interactive UI while the answer is still being generated. Buttons bridge back into the conversation. |
-| **B · Standalone** | Claude Code and any standard-skills agent | The agent writes DSL to a `.tokui` file, lints it, then builds a **self-contained interactive HTML report** (runtime + CSS fully inlined — opens offline in any browser, light/dark toggle built in). |
-
-Mode B is what makes the skill portable: no host integration required, just Node ≥ 18 on the machine the agent runs on.
+Fully host-agnostic: the platform needs no integration, just Node ≥ 18 on the machine the agent runs on. The agent writes DSL to a `.tokui` file, lints it, then builds a **self-contained interactive HTML report** (runtime + CSS fully inlined — opens offline in any browser, light/dark toggle built in).
 
 ## Install
 
-### Claude Code
+Two ways to get the skill onto a host: **copy** the folder, or **symlink** it from a clone of this repo so one source copy serves every agent at once.
+
+### Claude Code (copy)
 
 ```bash
 # personal skill (all projects)
@@ -31,15 +26,29 @@ cp -r /tmp/tokui-skill/skills/tokui-render ~/.claude/skills/
 mkdir -p .claude/skills && cp -r /tmp/tokui-skill/skills/tokui-render .claude/skills/
 ```
 
-A symlink (`ln -s …/skills/tokui-render ~/.claude/skills/tokui-render`) works too and stays up to date with `git pull`.
+### Symlink install — one source, every agent
+
+Keep a single clone of this repo as the source of truth and link `skills/tokui-render` into each agent's skill directory. Claude Code, ZCode, and Workbuddy all follow symlinks, so editing the repo (or `git pull`) updates the skill in every agent at once — no re-copying per host.
+
+```bash
+git clone <this-repo> ~/src/tokui-skill     # any stable path works
+SKILL=~/src/tokui-skill/skills/tokui-render
+
+mkdir -p ~/.claude/skills  ~/.zcode/skills  ~/.workbuddy/skills
+ln -s "$SKILL" ~/.claude/skills/tokui-render      # Claude Code
+ln -s "$SKILL" ~/.zcode/skills/tokui-render       # ZCode
+ln -s "$SKILL" ~/.workbuddy/skills/tokui-render   # Workbuddy
+```
+
+Notes:
+
+- Point the link at an **absolute** path — agents resolve skills from different working directories, so a relative link breaks outside the repo.
+- To uninstall from one host, just remove that link; the repo copy and the other agents are untouched.
+- Windows has no `ln -s`; use `mklink /D` from an elevated shell (or Developer Mode), or fall back to the copy method above.
 
 ### Any Agent-Skills-compatible runtime
 
 The portable unit is `skills/tokui-render/` — a standard `SKILL.md` (frontmatter `name` + `description`) with `references/`, `scripts/`, and `assets/`. Place that folder wherever your runtime looks for skills.
-
-### TokUI-Agent / pi
-
-Already built in — TokUI-Agent ships a pi-native variant of this skill with `tokui_docs` / `tokui_validate` model tools and live fence rendering. You don't need this repo there.
 
 ## Try it
 
@@ -58,16 +67,16 @@ The agent will pick components from the index, check precise attribute docs on d
 
 ## Why it's cheap on context
 
-Progressive disclosure, same philosophy as the pi-native original:
+Progressive disclosure keeps the context cost low:
 
 1. `SKILL.md` (~3k tokens) — component index, layout/chart decision tables, syntax iron rules. Loaded only on rendering tasks.
-2. `references/components.md` — precise per-component docs, grepped on demand (replaces the pi extension's `tokui_docs` tool).
+2. `references/components.md` — precise per-component docs, grepped on demand.
 3. `references/chart.md` / `table.md` / `patterns.md` — deep data-format docs, read only when writing charts/tables/grids.
 
 ## Repository layout
 
 ```
-skills/tokui-render/        ← the portable skill (copy this folder)
+skills/tokui-render/        ← the portable skill (copy or symlink this folder)
   SKILL.md                  standard frontmatter + workflow + rules + index
   references/               components.md (generated) · chart.md · table.md · patterns.md
   scripts/validate.mjs      standalone DSL linter (CLI)

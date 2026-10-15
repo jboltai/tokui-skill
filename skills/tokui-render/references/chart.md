@@ -1,4 +1,4 @@
-# chart 完整参考(21 种,纯 SVG 零依赖)
+# chart 完整参考(22 种,纯 SVG 零依赖)
 
 **属性顺序铁律:`t 类型 → 样式/布局 → l 标签 → 数据`**(违反则流式预览翻转)。
 
@@ -6,7 +6,7 @@
 
 | 属性 | 含义 |
 |---|---|
-| `t` | 图表类型(恒首):bar line area pie donut rose funnel radar scatter bubble heatmap histogram waterfall boxplot treemap sankey candlestick progress gauge gantt map |
+| `t` | 图表类型(恒首):bar line area pie donut rose funnel radar scatter bubble heatmap histogram waterfall boxplot treemap sankey candlestick progress gauge gantt map combo |
 | `tt` | 标题 |
 | `d` | 数据(格式见下表) |
 | `l` | 标签(数量必须 = 数据点/类别数) |
@@ -23,6 +23,7 @@
 | 类型 | d 格式 | 例 |
 |---|---|---|
 | bar line area radar | 多系列`\|`、点`,` | `d:"10,20,30\|15,25,35"` |
+| combo | 柱 `d`、线 `d2`(双轴) | `d:"820,640,980" d2:"12.4,8.6,15.2"` |
 | pie donut(单环) rose funnel waterfall histogram | 单系列`,` | `d:"10,20,30"` |
 | donut 多环 | 环`\|`、点`,` | `d:"40,30\|35,25"` |
 | scatter | 点`;`、坐标`,` | `d:"1,2;3,5"` |
@@ -55,8 +56,9 @@
 | 属性 | 含义 |
 |---|---|
 | `region` | 省级 choropleth 热力:`region:"浙江:86|江苏:74"`(34 省级行政区含港澳台;省名简称 `浙江`/全名 `浙江省` 均可;值经 蓝→青→绿→黄→红 色阶) |
-| `d` | 城市散点层:`d:"120.15,30.28,88,name:杭州"`(经度,纬度,值,名称;值对数映射半径,越界自动钳制) |
+| `d` | 城市散点层:`d:"120.15,30.28,88,name:杭州"`(经度,纬度,值,名称;值对数映射半径,越界自动钳制;**值 TOP12 自动涟漪扩散**,`ripple:off` 关闭) |
 | `vmin` `vmax` | 锁定色阶域(缺省用数据 min/max) |
+| `topn` | `topn:5` 左下自动生成区域 TOP-N 迷你榜(省名+比例条+数值,与色阶同源;0/不写=关) |
 | `label` | 标注三档:`full`(默认,含数据省 名+值 两行/无数据省灰名/碰撞自动避让) · `name`(仅含数据省显名) · `off`(纯色块,大屏窄卡) |
 | `unit` | 单位(≤8 字符):tooltip/色阶刻度/半径图例共用,如 `unit:"%"` |
 | `on` | `on:"mapClick:handler"` 点击含数据省份上报 `{province,value}`(大屏下钻) |
@@ -64,8 +66,16 @@
 交互默认开:hover 省份/散点多行 tooltip(省名/值+单位+占比)+ 高亮描边压暗其余;图内自带 左下 visualMap 色阶条(仅散点时换半径图例)+ 右下南海诸岛小图(九段线+四大群岛)。与 `region` 同图可再叠 `d` 散点。
 
 ```
-[chart t:map tt:"区域稼动率(%)" region:"浙江:86|江苏:74|广东:92" d:"116.4,39.9,120,name:北京|121.47,31.23,110,name:上海" unit:"%" vmin:0 vmax:100]
+[chart t:map tt:"区域稼动率(%)" region:"浙江:86|江苏:74|广东:92" d:"116.4,39.9,120,name:北京|121.47,31.23,110,name:上海" unit:"%" vmin:0 vmax:100 topn:5]
 [chart t:map region:"北京:78|上海:88" label:off w:360]   ← label:off 大屏窄卡
+```
+
+## combo 双轴组合图(柱+线,趋势面板标配)
+
+`d` 柱序列(左轴,渐变填充)· `d2` 折线序列(右轴,适合百分比/增速)· `n1`/`n2` 系列名(进图例/tooltip)· `y2` 右轴单位 · `smooth` 平滑 · `vals` 数值标签。缺 `d2` 退化为纯柱不炸。**金额+增速/量+率双轴对比必用 combo,勿拆两张图**。
+
+```
+[chart t:combo tt:"业绩趋势与回款" l:"1月,2月,3月,4月,5月,6月" d:"820,640,1080,1260,1150,1420" d2:"12.4,8.6,15.2,9.1,4.2,10.8" n1:新签金额 n2:环比增速 y2:% smooth]
 ```
 
 ## gauge 仪表盘

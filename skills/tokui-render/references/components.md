@@ -10,13 +10,13 @@
 - [think 思考与计划](#think): think think-chain think-step plan plan-step agent
 - [ai AI/对话](#ai): bubble toolbar tool-call typing chat-input msg-actions quick-reply suggestions suggestion source diff file-tree ft-folder ft-file terminal sandbox test-result test-case case commit quote latency conversations conv welcome welcome-feature feature attachments attach artifact artifact-code artifact-preview command command-group command-item canvas canvas-content
 - [media 媒体](#media): video audio imgs carousel carousel-item
-- [layout 布局容器](#layout): card ft row col grid list item i ol ul tabs tab accordion collapse dialog drawer timeline ti steps step desc desc-item tree tn menu menu-item resizable scroll-area sidebar sidebar-content sidebar-footer anchor lk affix masonry float-button print-area panel kpi flip-num fit-screen scrollboard page page-header page-sidebar page-content page-tabs reveal reveal-item page-tab
+- [layout 布局容器](#layout): card ft row col grid list item i ol ul tabs tab accordion collapse dialog drawer timeline ti steps step desc desc-item tree tn menu menu-item resizable scroll-area sidebar sidebar-content sidebar-footer anchor lk affix masonry float-button print-area panel kpi screen-header rank-list flip-num fit-screen scrollboard page page-header page-sidebar page-content page-tabs reveal reveal-item page-tab
 - [form 表单](#form): form input pwd textarea select radio checkbox opt switch slider rate numinput segmented editable color-picker btn btngroup picker cascader transfer upload datepicker timepicker datetimepicker
 - [table 表格](#table): table thead tbody tr tcol
 - [chart 图表](#chart): chart pt hrow flow task ms
 - [flow 动态指令](#flow): ins
 
-图表类型全集（t:）：bar / line / area / pie / donut / rose / funnel / radar / scatter / bubble / heatmap / histogram / waterfall / boxplot / treemap / sankey / candlestick / progress / gauge / gantt / map。
+图表类型全集（t:）：bar / line / area / pie / donut / rose / funnel / radar / scatter / bubble / heatmap / histogram / waterfall / boxplot / treemap / sankey / candlestick / progress / gauge / gantt / map / combo。
 
 ## text 文本与基础
 
@@ -32,9 +32,9 @@
 - **preview-group** — 容器 | id | 子 img 共享灯箱预览会话(缩放/旋转/计数/切换)
 - **hr** — 自闭合 | 水平分割线
 - **dv** — 自闭合 | 裸内容/tx v vert align bg th plain | 带文本分割线;v:vert 垂直
-- **md** — 容器·原始 | Markdown 渲染(表格/列表/任务/引用/代码围栏)。⚠本宿主未加载 mermaid/katex 插件——md 内 ```mermaid 围栏与 $$公式$$ 只会以源码回退显示,禁用;流程/结构关系改用 chart(t:sankey/gantt)/timeline,公式用普通文本(上下标 sub/sup)
-- **katex** — 容器·原始/自闭合 | f:公式 | ⚠本宿主未加载 katex 插件——公式只会显示原始 LaTeX 源码,禁用;公式用普通文本表达(上下标 sub/sup、符号直接写)
-- **mermaid** — 容器·原始 | ⚠本宿主未加载 mermaid 插件——图源只会以代码块回退显示,禁用;流程/时序/结构图改用 chart(t:sankey/gantt/treemap)、timeline、tabs+list 组合表达
+- **md** — 容器·原始 | Markdown 渲染(表格/列表/任务/引用/代码围栏)。⚠内置运行时未加载 mermaid/katex 插件——md 内 ```mermaid 围栏与 $$公式$$ 只会以源码回退显示,禁用;流程/结构关系改用 chart(t:sankey/gantt)/timeline,公式用普通文本(上下标 sub/sup)
+- **katex** — 容器·原始/自闭合 | f:公式 | ⚠内置运行时未加载 katex 插件——公式只会显示原始 LaTeX 源码,禁用;公式用普通文本表达(上下标 sub/sup、符号直接写)
+- **mermaid** — 容器·原始 | ⚠内置运行时未加载 mermaid 插件——图源只会以代码块回退显示,禁用;流程/时序/结构图改用 chart(t:sankey/gantt/treemap)、timeline、tabs+list 组合表达
 - **code** — 容器·原始 | lang | 高亮代码块+复制+行号;lang: js/ts/py/html/css/sql/json/java/go/rust/bash
 - **tag** — 自闭合 | tx t s round bordered closable dis bg fc | 标签;颜色 t: default/primary/success/warning/danger/info;s:small/medium/large
 - **kbd** — 自闭合 | 裸内容/tx | 键帽;变体 sm/lg
@@ -104,7 +104,7 @@
 - **tool-call** — 容器 | name status duration id approval collapsed clk | 工具调用卡片 status:pending/running/done/error/denied;approval+pending 渲染批准/拒绝(HITL);upd 支持 status/duration/result/error
 - **typing** — 自闭合 | text | 输入中指示(注意是 text 不是 tx)
 - **chat-input** — 容器 | ph clk dis max auto rows streaming mention on id | 对话输入框:Enter 发送/Shift+Enter 换行,发送触发 clk(负载 {value})或统一出口 send;streaming 显停止钮(on:"stop:h" 或默认断流);mention:数据源handler 启用 @ 提及;id 落 DOM,[upd id:x dis/streaming] 全通路生效
-- **msg-actions** — 容器 | clk copy regenerate like delete visible | 消息操作栏;布尔属性生成默认图标钮(copy 复制/regenerate 重生成/like 赞+踩/delete 删除),点击发 action 事件负载 {act}。⚠默认钮非前端行为,宿主须桥接 action/clk 才有回路——本宿主统一出口只转发 select/send/approval,用默认钮必须带 clk:名
+- **msg-actions** — 容器 | clk copy regenerate like delete visible | 消息操作栏;布尔属性生成默认图标钮(copy 复制/regenerate 重生成/like 赞+踩/delete 删除),点击发 action 事件负载 {act}。⚠默认钮非前端行为,点击经事件通道外发、静态报告无回路——用默认钮必须带 clk:名
 - **quick-reply** — 容器 | items clk | 快捷回复 items 逗号标签
 - **suggestions** — 容器 | cols clk id | 建议卡片网格 cols 1-4;子项 suggestion
 - **suggestion** — 自闭合 | tt tx clk icon dis | 建议项
@@ -161,8 +161,8 @@
 - **tab** — 容器 | tt | tabs 子项
 - **accordion** — 容器 | — | 手风琴,子项 collapse
 - **collapse** — 容器 | tt open id | 折叠面板;upd act:open/close
-- **dialog** — 容器 | tt id clk w | 对话框;upd act:open/close;w:弹窗宽px(480~1200 落 max-width,默认480,编辑表单 cols:2/transfer 用 w:720)。⚠本宿主未桥接打开:渲染后打不开,常规报告禁用——需要折叠/分层内容用 collapse(用户可点)或 tabs 替代
-- **drawer** — 容器 | tt pos w h id | 抽屉 pos:left/right/top/bottom。⚠同 dialog:本宿主打不开,禁用;侧栏内容用 tabs/collapse 替代
+- **dialog** — 容器 | tt id clk w | 对话框;upd act:open/close;w:弹窗宽px(480~1200 落 max-width,默认480,编辑表单 cols:2/transfer 用 w:720)。⚠静态报告无触发通路:渲染后打不开,常规报告禁用——需要折叠/分层内容用 collapse(用户可点)或 tabs 替代
+- **drawer** — 容器 | tt pos w h id | 抽屉 pos:left/right/top/bottom。⚠同 dialog:静态报告打不开,禁用;侧栏内容用 tabs/collapse 替代
 - **timeline** — 容器 | v | 时间轴 v:h/horizontal/alt/card;子项 ti(自闭合,正文写标签内,禁 [/ti])
 - **ti** — 自闭合 | tm t tt 裸内容 | 时间轴项 t:primary/success/warning/error/info。⚠没有 [/ti]!正文=开标签属性后的裸文本,与标签同一行:[ti tm:"2024 下半年" t:info tt:"v1.x 首发" 平台基础版发布,确立工程化定位]。tm/tt 含空格必须引号;正文一句流文本,不能含 ](含 [ ] 用引号包该词),不能换行分段;正文别出现 英文:值 词(会被吃成属性)
 - **steps** — 容器 | v s vd id | 步骤条 v=当前步(1-based,值语义);vd:v 竖排;子项 step(自闭合,正文写标签内,禁 [/step])
@@ -184,12 +184,14 @@
 - **masonry** — 容器 | cols minw gap | 瀑布流(图集/不等高卡片墙):子项放 img/card 等块级组件,CSS columns 自动分列、子项不截断;cols 固定列 1-6 或 minw:N 子项最小宽自适应(优先,响应式);gap 间距默认 8。⚠子项 card 有子内容必须 [/card] 闭合——card 不会自动闭合,漏写=整墙嵌套成一张卡。⚠图源必须可信稳定(外链图床防盗链=整墙裂图)。等高九宫格用 imgs
 - **float-button** — 容器 | pos offset | 浮动按钮组 pos 四角
 - **print-area** — 容器 | id tt | 打印区,配合 [btn print:ID] 1:1 打印
-- **panel** — 容器 | tt v(corner/glow/plain) theme | 科技边框容器(大屏面板);theme:tech 子树切科技风
-- **kpi** — 容器 | tt v(数值) pre suf unit trend dec icon clk t | 指标卡:数值滚动动画,trend:12.4/-1.2 自动↑↓徽章,t:danger/success/warning 状态色,[upd id: v:/trend:] 更新走动画
+- **panel** — 容器 | tt sub extra v(corner/glow/plain/scan) theme | 科技边框容器(大屏面板);sub 英文副标题,extra:'转化率 {9.8%}' 右侧信息({段}高亮);v:corner 四角角标/glow 发光/scan 扫描线(可逗号组合 v:'corner,scan');theme:tech 子树科技风(hover 抬升+标题栏渐变底)
+- **kpi** — 容器 | tt v(数值) pre suf unit trend dec icon pct clk t | 指标卡:数值滚动动画,trend:12.4/-1.2 自动↑↓徽章,pct:78 底部完成度光条,t:danger/success/warning 状态色,[upd id: v:/trend:/pct:] 更新走动画;tech 主题大数字 display 字体+辉光
+- **screen-header** — 自闭合 | tt sub lft rgt clock live h theme | 大屏门头:tt 渐变主标题(34px 字距8px 辉光)/sub 英文副题/lft·rgt 左右信息胶囊/clock 右端走动时钟+日期/live LIVE 呼吸灯/h 高度默认92(48-240);底缘主色渐变分隔线;整页大屏以它开头替代裸 h1
+- **rank-list** — 容器 | rows unit top av h speed clk theme | 龙虎榜:rows:'名,区域,值|…'(首列名 末列值 中间列合并副文本)简写自闭合;无 rows 容器收 tr 子节点;top:3 前三名渐变奖牌(金橙/青蓝/紫,默认3);av 首字渐变头像;unit 值后缀;h 视口高内容超高自动无缝上滚(hover暂停);排行榜场景用它勿用 scrollboard 裸表
 - **flip-num** — 自闭合 | v(数字串含逗号/%) dur s(sm/lg) | 逐位3D翻牌;upd v: 各位滚到位
 - **fit-screen** — 容器 | w h mode(scale/width/full) maxh | 大屏缩放容器:1920×1080 设计稿等比适配,scale/full 挂载区需定高;mode:scale 居中留空(默认)/width 等宽贴合内容高,maxh:视口高上限后超高纵滚/full 拉伸;内部容器 h:100% 满幅排版防画布留白
-- **scrollboard** — 容器 | h speed gap cols rows clk | 轮播榜单:rows:'a,1,↑2|b,2,↓3' 简写或 tr 子节点;↑↓自动着色;hover暂停无缝循环;speed:0 静止
-- **page** — 容器 | w(140~480 侧栏宽默认240) theme | 后台应用壳:grid areas 三区(header横贯顶/sidebar+content两列);直系子元素只写三件套 page-header/page-sidebar/page-content(其余落主区属兜底非规范);宿主有定高自动铺满否则按内容
+- **scrollboard** — 容器 | h speed gap cols rows clk | 轮播榜单:rows:'a,1,↑2|b,2,↓3' 简写或 tr 子节点;↑↓自动着色;胶囊格 tag:类型:文本(如 tag:success:已签约);hover暂停无缝循环;speed:0 静止
+- **page** — 容器 | w(140~480 侧栏宽默认240) theme | 后台应用壳:grid areas 三区(header横贯顶/sidebar+content两列);直系子元素只写三件套 page-header/page-sidebar/page-content(其余落主区属兜底非规范);外层容器有定高自动铺满否则按内容
 - **page-header** — 容器 | tt bc sticky | 页头:bc:'首页,系统,用户' 逗号分级面包屑(末项自动当前页);sticky 吸顶;子节点(btn等)落右侧动作插槽;upd id: tt:/bc: 就地更新
 - **page-sidebar** — 容器 | tt | 侧栏:品牌行+折叠钮(联动 page 列宽 240⇄64)+滚动主体;toggle 上报 {folded};菜单联动:menu change 载荷 {value,item,path},一条 upd id:header bc: 即同步面包屑
 - **page-content** — 容器 | — | 主区薄包装:纵列+自滚动+裁剪防护,列表/表单/详情直接放
@@ -200,7 +202,7 @@
 
 ## form 表单
 
-- **form** — 容器 | act mtd sub clk id cols lw gap v:inline | 提交前执行 reportValidity(req/pat 拦截);sub=提交处理器。⚠末尾必带提交+重置两按钮,直接放 form 内(勿用 [ft]):[btn tx:提交 v:primary sub:formSubmit](数据以用户消息回传)+[btn tx:重置 reset](前端清空);提交用 sub 不用 clk(clk 绕过校验);字段 l:中文标签 n:英文key 必填 req。M2 布局:cols:1~4 字段网格/lw 标签统一宽(40~320)/gap 间距/v:inline 过滤条(与cols同写cols优先);字段 v:full 跨整行(全字段类型);编辑资料默认 cols:2 lw:84 起步。编辑回填(M2):dialog 常驻→逐字段 upd(input/select/radio v:值;datepicker v:2024-06-01;time·datetimepicker v:"09:30";cascader v:"gd/gz" 路径校验;transfer v:"1,2" 右栏重排;upload act:fill files:"名,url,大小|…")
+- **form** — 容器 | act mtd sub clk id cols lw gap v:inline | 提交前执行 reportValidity(req/pat 拦截);sub=提交处理器。⚠末尾必带提交+重置两按钮,直接放 form 内(勿用 [ft]):[btn tx:提交 v:primary sub:formSubmit]+[btn tx:重置 reset](前端清空);提交用 sub 不用 clk(clk 绕过校验);字段 l:中文标签 n:英文key 必填 req。M2 布局:cols:1~4 字段网格/lw 标签统一宽(40~320)/gap 间距/v:inline 过滤条(与cols同写cols优先);字段 v:full 跨整行(全字段类型);编辑资料默认 cols:2 lw:84 起步。编辑回填(M2):dialog 常驻→逐字段 upd(input/select/radio v:值;datepicker v:2024-06-01;time·datetimepicker v:"09:30";cascader v:"gd/gz" 路径校验;transfer v:"1,2" 右栏重排;upload act:fill files:"名,url,大小|…")
 - **input** — 自闭合 | l ph id n val ml req dis ro w hint pat err ok live search v pre/app/prebtn/appbtn rule msg sug db t | val 存初值(v 是变体);t:email 才有邮箱格式校验(t:text/缺省只查非空);rule:"required|email|len:6" DSL 校验;live 实时校验;search 图标;pre:¥ 前置
 - **pwd** — 自闭合 | 同 input + toggle | 密码框;toggle 显隐
 - **textarea** — 容器 | l id n ph rows maxlen maxrows auto tx req | 多行输入。⚠与 input 不同,不自闭合:初始值用 tx: 自闭合([textarea n:note ph:提示 tx:默认值])或容器式写在标签间([textarea n:note]默认值[/textarea]);**空字段也必须 [/textarea] 闭合**,漏闭合会吞掉后续表单控件。auto 自适应高度
@@ -235,7 +237,7 @@
 
 ## chart 图表
 
-- **chart** — 容器/自闭合 | t tt d l c w h v ... | ⚠属性顺序铁律 t→样式→l→d;系列色默认随主题色板自动切换(T0.5,暗色自动提亮,无需手动 c:),仅特殊品牌色才写 c:;grad 布尔=渐变填充(bar/area/donut);enter:'false' 关入场动画;21 种类型 t:bar/line/area/pie/donut/rose/funnel/radar/scatter/bubble/heatmap/histogram/waterfall/boxplot/treemap/sankey/candlestick/progress/gauge/map(中国地图:region:'浙江:86|江苏:74' 省级热力 34省含港澳台+d:'lng,lat,val,name:城市' 散点;label:full|name|off 标注三档;unit 单位;hover多行tooltip+高亮;点击省份 on:'mapClick:handler' 上报;vmin/vmax 锁色阶+自带 visualMap 色阶条/南海诸岛小图);无 d 时容器模式收 pt/hrow/flow/task/ms。完整数据格式见 references/chart.md
+- **chart** — 容器/自闭合 | t tt d l c w h v ... | ⚠属性顺序铁律 t→样式→l→d;系列色默认随主题色板自动切换(T0.5,暗色自动提亮,无需手动 c:),仅特殊品牌色才写 c:;grad 布尔=渐变填充(bar/area/donut);enter:'false' 关入场动画;22 种类型 t:bar/line/area/pie/donut/rose/funnel/radar/scatter/bubble/heatmap/histogram/waterfall/boxplot/treemap/sankey/candlestick/progress/gauge/map/combo;map(中国地图:region:'浙江:86|江苏:74' 省级热力 34省含港澳台+d:'lng,lat,val,name:城市' 散点 值TOP12自动涟漪(ripple:off 关);topn:5 左下自动区域TOP榜;label:full|name|off 标注三档;unit 单位;hover多行tooltip+高亮;点击省份 on:'mapClick:handler' 上报;vmin/vmax 锁色阶+自带 visualMap 色阶条/南海诸岛小图);combo(双轴组合图:d 柱左轴+d2 线右轴+n1/n2 系列名+y2 右轴单位,趋势+增速面板标配);无 d 时容器模式收 pt/hrow/flow/task/ms。完整数据格式见 references/chart.md
 - **pt** — 自闭合 | v | chart 容器模式点子节点
 - **hrow** — 自闭合 | v | heatmap 行子节点 v,v,v
 - **flow** — 自闭合 | v | sankey 子节点 源->目标:值
@@ -248,15 +250,15 @@
 
 ## 全局属性（全部组件可用，落组件根元素）
 
-- **cls** — 全局属性 | 自定义类名,空格分多个(含空格整个值双引号包) | 每个类名须 ^[a-zA-Z][\w-]{0,63}$、拒 tokui- 前缀、上限 8 个去重;非法词静默丢弃。用于宿主 CSS 钩子(动画/精修)。例:[card tt:品牌卡 cls:"pricing fade-in"]
+- **cls** — 全局属性 | 自定义类名,空格分多个(含空格整个值双引号包) | 每个类名须 ^[a-zA-Z][\w-]{0,63}$、拒 tokui- 前缀、上限 8 个去重;非法词静默丢弃。用于自定义 CSS 钩子(动画/精修)。例:[card tt:品牌卡 cls:"pricing fade-in"]
 - **style** — 全局属性 | 白名单内联样式,落组件根元素 | 放行 background(-image/-color)/color/border(含圆角)/padding/margin/box-shadow/opacity/font-*/text-align/letter-spacing/line-height/max-min宽高/gap/flex族/align-justify/transform(仅translate/scale/rotate族)/backdrop-filter/aspect-ratio/object-fit/transition/z-index;url() 仅 http(s)/站内相对。**拒绝**(静默丢弃):position/top/left/right/bottom、expression()、javascript:、behavior:、@import、url(data:)/url(ftp:)、transform:matrix。例:[card style:"background:linear-gradient(135deg,var(--tokui-primary-1),var(--tokui-bg));border-radius:16px"]。违规声明静默丢弃,合法声明照常生效
-- **data-*** — 全局属性 | data- 开头属性原样透传到组件根元素(全组件),clk:/sub: handler 第三参 element 经 getAttribute/dataset 读取,事件携带自定义数据 | 例:[btn tx:删除 t:danger data-id:1024 data-scene:order-list clk:onDel]→el.dataset.id='1024'/el.dataset.scene='order-list'。**拒 data-tokui-***(框架内部印章:clk/sub/act/tag,防 DSL 伪造印章劫持事件分发,写了不透传);组件已手动落的同名属性不覆盖;值含空格整个值双引号包;表格行另有简写 tr d:"k:v k2:v2"(自动加 data- 前缀落行元素)。轻量上下文优先 clk:"h?k=v" 内联参数(查 tokui_docs clk)
+- **data-*** — 全局属性 | data- 开头属性原样透传到组件根元素(全组件),clk:/sub: handler 第三参 element 经 getAttribute/dataset 读取,事件携带自定义数据 | 例:[btn tx:删除 t:danger data-id:1024 data-scene:order-list clk:onDel]→el.dataset.id='1024'/el.dataset.scene='order-list'。**拒 data-tokui-***(框架内部印章:clk/sub/act/tag,防 DSL 伪造印章劫持事件分发,写了不透传);组件已手动落的同名属性不覆盖;值含空格整个值双引号包;表格行另有简写 tr d:"k:v k2:v2"(自动加 data- 前缀落行元素)。轻量上下文优先 clk:"h?k=v" 内联参数(详查 components.md 事件通道 clk)
 
 ## 事件通道（clk / sub / on）
 
-宿主相关：TokUI-Agent 等实时宿主会把 clk/sub 事件桥接回会话变成新的用户消息；独立 HTML 报告里点击不上报（静态交付）。
+静态交付：生成的 HTML 报告里 clk/sub 点击不上报，按钮仅作视觉示意。
 
-- **clk:** — 事件通道 | 点击处理器名,需宿主 registerHandler 注册(本宿主已桥接 clk:→以用户消息回传) | 处理器引用可带查询串内联参数:clk:"onDel?id=1024&scene=order-list"——'?' 后按 '&' 分段,段内首个 '=' 分 k/v,值一律字符串(URL decode,空格写 %20),无 '=' 的段=布尔 true;参数直接进 handler 第一参(无需从 DOM 读);与表单数据共存时合并进同一对象、同名键内联参数优先;参数键 __proto__/constructor/prototype 被拒;无 '?' 时行为与旧版一致。也可配 data-* 属性把数据落根元素、handler 第三参 element 读取
+- **clk:** — 事件通道 | 点击处理器名,需运行时 registerHandler 注册——静态 HTML 报告无 handler,点击不上报(按钮仅视觉示意) | 处理器引用可带查询串内联参数:clk:"onDel?id=1024&scene=order-list"——'?' 后按 '&' 分段,段内首个 '=' 分 k/v,值一律字符串(URL decode,空格写 %20),无 '=' 的段=布尔 true;参数直接进 handler 第一参(无需从 DOM 读);与表单数据共存时合并进同一对象、同名键内联参数优先;参数键 __proto__/constructor/prototype 被拒;无 '?' 时行为与旧版一致。也可配 data-* 属性把数据落根元素、handler 第三参 element 读取
 - **sub:** — 事件通道 | 表单提交处理器名(提交前走原生校验 req/pat;提交必须用 sub 不用 clk) | 同 clk 支持内联参数:sub:"onLogin?src=header"——表单收集数据与参数合并进同一对象,同名键内联参数优先(DSL 显式声明意图更强)
 - **on:** — 事件通道 | 交互事件上报声明 on:"事件:处理器"(必须双引号,英文逗号分多对) | 处理器可带内联参数:on:"change:onKw?src=header&draft"(无 '=' 段=布尔 true);⚠参数值不能含英文逗号(',' 是事件对分隔符,在 decode 前拆断、残段被丢——写 %2C)也不能含裸 ':'(写 %3A);事件如 tabs/menu/switch/pagination change、dialog close、scroll-area loadmore、chart t:map 的 mapClick
 
@@ -302,4 +304,5 @@
 - **anchor**: horizontal
 - **scroll-area**: flush
 - **kbd**: sm lg
+- **panel**: corner glow plain scan
 

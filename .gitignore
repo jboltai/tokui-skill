@@ -1,3 +1,11 @@
+# Dependencies
 node_modules/
-*.html
+
+# OS / editor noise
 .DS_Store
+.idea/
+
+# Scratch output when trying the skill inside this repo
+# (agents write .tokui drafts and build self-contained .html reports in CWD)
+*.html
+*.tokui

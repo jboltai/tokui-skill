@@ -453,9 +453,10 @@ function escapesSelfClosing(name, attrs, content) {
     const t = attrValue(attrs, "t");
     if ((t === "gauge" || t === "progress") && attrValue(attrs, "v") !== undefined) return true;
   }
-  // 大屏件叶用法豁免(镜像 parser 容错):kpi 带 v:/tt: 即指标卡叶子;scrollboard 带 rows: 即简写数据源
+  // 大屏件叶用法豁免(镜像 parser 容错):kpi 带 v:/tt: 即指标卡叶子;scrollboard/rank-list 带 rows: 即简写数据源
   if (name === "kpi" && (attrValue(attrs, "v") !== undefined || attrValue(attrs, "tt") !== undefined)) return true;
   if (name === "scrollboard" && attrValue(attrs, "rows") !== undefined) return true;
+  if (name === "rank-list" && attrValue(attrs, "rows") !== undefined) return true;
   if (name === "tn" && attrs.includes("leaf")) return true;
   if (name === "input-tag" && attrValue(attrs, "tags") !== undefined) return true;
   if ((name === "p" || name === "item") && content) return true; // 有正文 = 叶子(镜像渲染器)
@@ -473,7 +474,7 @@ export function lintDsl(dsl) {
   const stats = { tags: 0, containers: 0 };
   /** @type {{name:string, line:number, attrs:string[], raw:string, id?:string, hasSubmit?:boolean}[]} */
   const stack = [];
-  // 已闭合的 form(等待缺提交按钮检查);overlayIds = dialog/drawer 的 id(宿主打不开 + act:open 检测)
+  // 已闭合的 form(等待缺提交按钮检查);overlayIds = dialog/drawer 的 id(静态报告打不开 + act:open 检测)
   const closedForms = [];
   const overlayIds = new Set();
   const bareContainerIssues = []; // { name, line }:card/callout 裸正文,定向聚合报告
@@ -510,7 +511,7 @@ export function lintDsl(dsl) {
     if (name && /^[a-zA-Z][a-zA-Z0-9_-]*$/.test(name)) {
       stats.tags++;
       if (!ALL_NAMES.has(name) && !name.includes("_")) {
-        errors.push({ line, msg: `未知组件 [${name}] —— 不在 TokUI 组件清单内,禁止臆造。相近组件可用 tokui_docs 查询` });
+        errors.push({ line, msg: `未知组件 [${name}] —— 不在 TokUI 组件清单内,禁止臆造。相近组件可查 references/components.md` });
       }
 
       // 属性语义检查:容器与自闭合统一覆盖
@@ -597,11 +598,26 @@ export function lintDsl(dsl) {
             if (popped.name === "ft" && popped.openEnd !== undefined && dsl.slice(popped.openEnd, i).trim() === "") {
               warnings.push({ line: popped.line, msg: "空 [ft][/ft] 不会渲染(渲染器对空页脚返回 null)——删除它,或写内容 [ft tx:\"备注文字\"]" });
             }
+            // row 闭合:col span 总和超 12(12 栅格)必换行——大屏 rows px 轨/定高行下溢出内容被下方区域盖住
+            if (popped.name === "row" && popped.colSpans) {
+              const total = popped.colSpans.reduce((s, c) => s + c.span, 0);
+              if (total > 12) {
+                warnings.push({
+                  line: popped.line,
+                  msg: `row 的 col span 总和 ${total} 超 12(12 栅格)→ 必换行成 ${Math.ceil(total / 12)} 行,定高行(大屏 rows px 行轨)下换行溢出会被下方区域盖住显示不全——${popped.colSpans.length} 个并排应各 span:12/个数(如 6 个=span:2、3 个=span:4)`,
+                });
+              }
+            }
           }
         }
       } else if (CONTAINERS.has(name)) {
         // 开标签(容器)
         const selfClosing = escapesSelfClosing(name, parsed.attrs, parsed.content);
+        // row 直系 col 的 span 记账(闭合时查总和):12 栅格,超限必换行——定高行下溢出被下方盖住
+        if (name === "col" && stack.length > 0 && stack[stack.length - 1].name === "row") {
+          const sv = parseInt(attrValue(parsed.attrs, "span"), 10);
+          (stack[stack.length - 1].colSpans ??= []).push({ span: Number.isFinite(sv) ? Math.min(12, Math.max(1, sv)) : 1, line });
+        }
         if (selfClosing) {
           // tx 叶子卡本身合法;仅当其后紧跟正文文字(会漏到卡外渲染)时才警告
           if (name === "card" && attrValue(parsed.attrs, "tx") !== undefined) {
@@ -659,7 +675,7 @@ export function lintDsl(dsl) {
           // 容器模式开标签同样校验变体白名单(scroll-area v:flush / card v:bordered 等)
           checkVariantWhitelist(name, parsed.attrs, line, warnings);
           stack.push(frame);
-          // dialog/drawer:本宿主未桥接打开动作,渲染后永远打不开
+          // dialog/drawer:静态报告无触发通路,渲染后永远打不开
           if (name === "dialog" || name === "drawer") {
             // 布尔属性 open 落在 content tokens 里(parseInner 只把 key:value 归入 attrs)
             if (parsed.content.trim().split(/\s+/).includes("open")) {
@@ -668,7 +684,7 @@ export function lintDsl(dsl) {
             if (stack[stack.length - 1].id) overlayIds.add(stack[stack.length - 1].id);
             warnings.push({
               line,
-              msg: `本宿主未桥接 ${name} 的打开动作(渲染后打不开)——改用 collapse(用户可点开)或 tabs 承载折叠/分层内容`,
+              msg: `静态报告打不开 ${name}(无触发通路)——改用 collapse(用户可点开)或 tabs 承载折叠/分层内容`,
             });
           }
         }
@@ -807,7 +823,7 @@ function checkAttrSemantics(name, parsed, line, errors, warnings) {
       const k = a.split(":", 1)[0];
       if (knownKeys.has(k) || BARE_TEXT_PASS_KEYS.has(k) || k.startsWith("data-")) continue;
       // icon:/i: 高频误用(铁律 9 列了 61 个图标名,易被当成全局语法套到 item/p):
-      // 给出真实宿主与 item 的合法替代,避免模型只把冒号全角化、把图标名渲染成正文。
+      // 给出真正支持 icon 的组件与 item 的合法替代,避免模型只把冒号全角化、把图标名渲染成正文。
       const iconHint = (k === "icon" || k === "i")
         ? `。icon:/i: 仅 btn、表格操作列钮、kpi 支持(menu-item 可 i:):${name} 要图标效果,删掉该前缀,emoji 直接写正文开头或改用 [tag]`
         : "";
@@ -915,7 +931,17 @@ function checkSelfClosingTag(name, parsed, line, errors, warnings) {
   if (name === "chart") {
     const t = attrValue(attrs, "t");
     if (t !== undefined && !CHART_TYPES.has(t)) {
-      errors.push({ line, msg: `未知图表类型 t:${t} —— 仅支持 21 种(bar/line/area/pie/donut/rose/funnel/radar/scatter/bubble/heatmap/histogram/waterfall/boxplot/treemap/sankey/candlestick/progress/gauge/gantt/map)` });
+      errors.push({ line, msg: `未知图表类型 t:${t} —— 仅支持 22 种(bar/line/area/pie/donut/rose/funnel/radar/scatter/bubble/heatmap/histogram/waterfall/boxplot/treemap/sankey/candlestick/progress/gauge/gantt/map/combo)` });
+    }
+    // combo 专项:d2 缺失退化为纯柱(可能非本意);d2 含中文逗号同样坍缩
+    if (t === "combo") {
+      if (attrValue(attrs, "d2") === undefined) {
+        warnings.push({ line, msg: "chart t:combo 缺 d2(折线序列)——当前退化为纯柱图;双轴对比应写 d2:\"增速,…\" + n1/n2 系列名 + y2 右轴单位" });
+      }
+      const d2v = attrValue(attrs, "d2");
+      if (d2v && d2v.includes("，")) {
+        errors.push({ line, msg: "chart d2: 的分隔必须英文逗号——检测到中文逗号「，」(数据点坍缩成 1 个)" });
+      }
     }
     const dataPos = attrPos(attrs, (a) => /^(d|tasks|rows|flows|nodes):/.test(a));
     const lPos = attrPos(attrs, (a) => /^l:/.test(a));
