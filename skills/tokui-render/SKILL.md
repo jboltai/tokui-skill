@@ -12,7 +12,7 @@ description: Render data & analysis results as rich interactive UI with TokUI DS
 1. 把 DSL 写进 `<主题>.tokui` 文件（多段报告可写多个文件或一个文件多段；文件内不放围栏标记）。也可直接校验 markdown 里已有的 ```tokui 围栏（给 validate.mjs 传 .md 文件）。
 2. `node <skill-dir>/scripts/validate.mjs <文件>.tokui` 校验——有错必须修复后重跑，通过才算交付。
 3. `node <skill-dir>/scripts/render.mjs <文件>.tokui -o <主题>.html [--title "标题"] [--theme default|dark|modern|modern-dark] [--shell auto|dashboard|report] [--open]` 生成自包含 HTML（运行时+CSS 全内联，离线可开、亮暗可切）。**各段根节点均为单块 `fit-screen`（数据大屏）时自动切全屏大屏壳**：满视口无边距、无报告头、主题切换钮悬浮角落，大屏按视口等比缩放铺满；多块大屏 = 多个输入文件（每屏一文件，逐屏满页）；`--shell` 可强制壳型。**大屏交付必须加 `--open`：生成后自动调本机默认浏览器直接打开**（macOS open / Linux xdg-open / Windows start，用户即刻看到全屏效果）。
-4. 交付：告知用户 HTML 路径与打开方式。回复正文 = 业务小标题 + 结尾业务总结（结论/风险/建议，不提技术）；面向非技术用户，正文不出现组件名/属性/DSL/布局术语，技术词汇与客套填充严禁进正文。同一报告只生成交付一次，严禁重复生成压缩版/重复版。
+4. 交付：告知用户 HTML 路径与打开方式。回复正文 = 业务小标题 + 结尾业务总结（结论/风险/建议，不提技术）；面向非技术用户，正文不出现组件名/属性/DSL/布局术语，技术词汇与客套填充严禁进正文。同一报告只生成交付一次，严禁重复生成压缩版/重复版。**防御性围栏规则：仅当宿主明确支持聊天正文内联渲染 TokUI 时才可在正文输出 DSL，且必须逐段用 ```tokui 围栏包裹——裸写的 `[组件 …]` 行任何宿主都不会渲染，只会显示为源码文本；默认交付一律走 .tokui 文件 + HTML，正文不放 DSL。**
 
 ## 工作流（选型→查档→写→校→渲）
 1. 选型：布局/图表用下方决策表；只用组件索引内组件，禁止臆造。
