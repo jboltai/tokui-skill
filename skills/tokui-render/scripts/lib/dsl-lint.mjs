@@ -1095,6 +1095,131 @@ function checkSelfClosingTag(name, parsed, line, errors, warnings) {
   }
 }
 
+// —— 确定性自动修正(游离词成因①) ——
+// 「标题值含空格未加引号被切开」的修法唯一:引号合并。与 lint 的成因①诊断
+// 同口径:游离词必须紧跟未引号的 tt: 属性(成因②裸正文语义不明,不自动改);
+// 值/游离词含引号或 [ 时放弃(修复不唯一,交手工)。validate.mjs --fix 与
+// 宿主显示层共用:坏围栏直接得到可交付的修正版,省一次凭记忆重写的往返。
+
+// 仅标题文本通道可安全合并;v:/l: 等语义键合并会改义,不自动修
+const AUTOFIX_ATTR = new Set(["tt"]);
+
+/** 带位置 token 化(与 parseInner 同规则:引号内空格不切)。 */
+function tokenizeInner(inner) {
+  const toks = [];
+  let buf = "";
+  let s = -1;
+  let inQuote = false;
+  for (let i = 0; i < inner.length; i++) {
+    const ch = inner[i];
+    if (ch === '"') { inQuote = !inQuote; if (s === -1) s = i; buf += ch; continue; }
+    if (!inQuote && /\s/.test(ch)) {
+      if (buf) { toks.push({ s, e: i, text: buf }); buf = ""; s = -1; }
+      continue;
+    }
+    if (s === -1) s = i;
+    buf += ch;
+  }
+  if (buf) toks.push({ s, e: inner.length, text: buf });
+  return toks;
+}
+
+/** 首个游离词若紧跟未引号的可合并属性 → 返回 inner 内的替换区间;否则 null。 */
+function fixBareTitleSpan(inner) {
+  const toks = tokenizeInner(inner);
+  for (let i = 1; i < toks.length; i++) {
+    const t = toks[i];
+    if (t.text.startsWith('"') || /^[a-zA-Z][a-zA-Z0-9_-]*:/.test(t.text)) continue; // 引号内容/属性:非游离词
+    const prev = toks[i - 1];
+    const m = /^([a-zA-Z][a-zA-Z0-9_-]*):(.*)$/.exec(prev.text);
+    if (!m || !AUTOFIX_ATTR.has(m[1]) || m[2].startsWith('"')) return null; // 前邻非可合并属性/值已引号
+    let j = i; // 连续游离词一并并入(遇属性或引号 token 止)
+    while (j + 1 < toks.length) {
+      const nx = toks[j + 1];
+      if (nx.text.startsWith('"') || /^[a-zA-Z][a-zA-Z0-9_-]*:/.test(nx.text)) break;
+      j++;
+    }
+    const merged = m[2] + " " + toks.slice(i, j + 1).map((x) => x.text).join(" ");
+    if (/["[\]]/.test(merged)) return null; // 含引号/方括号:修复不唯一,交手工
+    return { s: prev.s, e: toks[j].e, text: `${m[1]}:"${merged}"` };
+  }
+  return null;
+}
+
+/**
+ * 确定性自动修正(两类):
+ * ① card/callout(容器模式)/stat 的 tt: 值含空格被切成的「属性 + 游离词」→ 引号合并;
+ * ② 文本结束时仍未闭合的容器 → 尾部依栈序补 [/xx](镜像渲染器 endStream 的
+ *    自动闭合,显示层与最终渲染一致)。仅当结构无歧义时执行 ②:出现错配/
+ *    多余闭合/自闭合组件的闭合标签/未终结 [ /未闭合原始容器任一情况即放弃
+ *    (这些交给手工修)。返回 { dsl, count, fixes:[{line}] },count=0 时原样返回。
+ */
+export function autofixDsl(dsl) {
+  const fixes = [];
+  const stack = []; // 未闭合容器帧(镜像 lintDsl 主循环的栈语义,含 pop-through)
+  let chaos = false;
+  let i = 0;
+  while (i < dsl.length) {
+    if (dsl[i] !== "[") { i++; continue; }
+    const tag = scanTag(dsl, i);
+    if (!tag) { chaos = true; break; } // 未终结的 [ :边界不明
+    const toks = tokenizeInner(tag.inner);
+    const name = toks[0]?.text ?? "";
+    const isClose = name.startsWith("/");
+    const attrToks = toks.slice(1)
+      .filter((t) => !t.text.startsWith('"') && /^[a-zA-Z][a-zA-Z0-9_-]*:/.test(t.text))
+      .map((t) => t.text);
+    const content = toks.slice(1)
+      .filter((t) => t.text.startsWith('"') || !/^[a-zA-Z][a-zA-Z0-9_-]*:/.test(t.text))
+      .map((t) => t.text)
+      .join(" ");
+
+    if (!isClose && CONTAINERS.has(name)) {
+      if (!escapesSelfClosing(name, attrToks, content)) {
+        stack.push(name);
+        // 镜像 lint:原始内容容器内部不是组件语法,跳到闭合标签(未闭合则放弃)
+        if (RAW_CONTAINERS.has(name)) {
+          const m = dsl.slice(tag.end).match(new RegExp(`\\[\\/${name}\\]`));
+          if (m) { i = tag.end + m.index; continue; }
+          chaos = true;
+          break;
+        }
+      }
+    } else if (isClose) {
+      const bare = name.slice(1);
+      if (CONTAINERS.has(bare) || bare === "p" || bare === "ins") {
+        const idx = [...stack].reverse().indexOf(bare);
+        if (idx === -1) chaos = true; // 多余闭合
+        else stack.length = stack.length - idx - 1; // 镜像 lint:连同中间帧一并弹出
+      } else {
+        chaos = true; // 自闭合组件的闭合标签等改写型错误
+      }
+    }
+
+    if (!isClose && (name === "card" || name === "callout" || name === "stat")) {
+      // 镜像 lint:card/callout 自闭合逃逸路径(tx:/cols:…)不报游离词,也不自动改
+      const escapedLeaf = (name === "card" || name === "callout") && escapesSelfClosing(name, attrToks, "");
+      if (!escapedLeaf) {
+        const fix = fixBareTitleSpan(tag.inner);
+        if (fix) fixes.push({ ...fix, start: i + 1 + fix.s, end: i + 1 + fix.e, line: lineOf(dsl, i) });
+      }
+    }
+    i = tag.end;
+  }
+
+  let out = dsl;
+  for (let k = fixes.length - 1; k >= 0; k--) {
+    const f = fixes[k];
+    out = out.slice(0, f.start) + f.text + out.slice(f.end);
+  }
+  if (!chaos && stack.length) {
+    const closers = stack.slice().reverse().map((n) => `[/${n}]`).join("\n");
+    out = out.replace(/\s+$/, "") + "\n" + closers + "\n";
+    for (let k = 0; k < stack.length; k++) fixes.push({ line: lineOf(out, out.length) });
+  }
+  return { dsl: out, count: fixes.length, fixes: fixes.map(({ line }) => ({ line })) };
+}
+
 /** 去掉 ```tokui 围栏(如果传入的是整段回复) */
 export function stripFences(text) {
   const fence = /```(?:tokui)?\s*\n([\s\S]*?)```/.exec(text);

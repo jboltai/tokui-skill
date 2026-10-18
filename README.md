@@ -62,7 +62,7 @@ The agent will pick components from the index, check precise attribute docs on d
 
 | Script | Purpose |
 |---|---|
-| `scripts/validate.mjs <file.tokui\|file.md\|->` | Lint DSL (unclosed containers, unknown components, variant whitelists, quoting traps, chart attribute order…). Extracts every ```tokui fence from markdown. Exit 1 on errors. `--json` for machine output. |
+| `scripts/validate.mjs <file.tokui\|file.md\|->` | Lint DSL (unclosed containers, unknown components, variant whitelists, quoting traps, chart attribute order…). Extracts every ```tokui fence from markdown. Exit 1 on errors. `--json` for machine output, `--fix` rewrites deterministic errors (unquoted spaced titles) in place. |
 | `scripts/render.mjs <files…> -o out.html` | Build a self-contained HTML report. `--title`, `--theme default\|dark\|modern\|modern-dark`, `--runtime-dir` to point at a custom TokUI dist. |
 
 ## Why it's cheap on context

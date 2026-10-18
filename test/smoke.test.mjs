@@ -12,6 +12,7 @@ const repoRoot = dirname(dirname(fileURLToPath(import.meta.url)));
 const skillDir = join(repoRoot, "skills", "tokui-render");
 const validate = join(skillDir, "scripts", "validate.mjs");
 const render = join(skillDir, "scripts", "render.mjs");
+const { autofixDsl, lintDsl } = await import(join(skillDir, "scripts", "lib", "dsl-lint.mjs"));
 const tmp = mkdtempSync(join(tmpdir(), "tokui-skill-"));
 
 const GOOD_DSL = `[card tt:"Q3 概览"]
@@ -70,6 +71,48 @@ test("validate: no DSL content exits 2", () => {
   writeFileSync(file, "just plain text, nothing to render\n");
   const out = run(validate, [file], { expectFail: true });
   assert.match(out, /no TokUI DSL/i);
+});
+
+test("validate --fix: unquoted spaced titles are rewritten in place, second run exits 0", () => {
+  const file = join(tmp, "fixme.tokui");
+  writeFileSync(file, '[card tt:大模型平台市场份额(2025E 估算)]\n[chart t:donut v:"CR5 84%" l:"a,b" d:"1,2"]\n[/card]\n');
+  const out = run(validate, ["--fix", file]);
+  assert.match(out, /--fix 已自动修正 1 处/);
+  const fixed = readFileSync(file, "utf8");
+  assert.ok(fixed.includes('[card tt:"大模型平台市场份额(2025E 估算)"]'), "in-place rewrite applied");
+  assert.ok(fixed.endsWith("[/card]\n"), "trailing content preserved byte-identical");
+  const again = run(validate, [file]);
+  assert.match(again, /校验通过/);
+});
+
+test("validate --fix: markdown fences are fixed per-fence, prose untouched", () => {
+  const file = join(tmp, "fixme.md");
+  const md = "# 报告\n\n第一段：\n\n```tokui\n[card tt:份额 估算]\n[p x]\n[/card]\n```\n\n结尾说明。\n";
+  writeFileSync(file, md);
+  run(validate, ["--fix", file]);
+  const fixed = readFileSync(file, "utf8");
+  assert.ok(fixed.includes('[card tt:"份额 估算"]'));
+  assert.ok(fixed.startsWith("# 报告\n\n第一段：\n\n```tokui\n"));
+  assert.ok(fixed.endsWith("```\n\n结尾说明。\n"));
+});
+
+test("autofixDsl: deterministic merge only (cause-1 after tt:), everything else untouched", () => {
+  const fixed = autofixDsl("[stat v:1246 pre:¥ tt:客单价 89 元]");
+  assert.ok(fixed.dsl.includes('tt:"客单价 89 元"'));
+  assert.equal(fixed.count, 1);
+  const notFixable = autofixDsl("[card v:primary 标题正文][p x][/card]");
+  assert.equal(notFixable.count, 0);
+  const quoted = autofixDsl('[card tt:"今日 GMV"][/card]');
+  assert.equal(quoted.count, 0);
+});
+
+test("autofixDsl: EOF-unclosed containers get closers appended (mirror endStream)", () => {
+  const unclosed = "[row]\n[col span:7]\n[card tt:\"份额\"]\n[chart t:donut l:\"a\" d:\"1\"]\n[/card]\n[/col]";
+  const fixed = autofixDsl(unclosed);
+  assert.ok(fixed.dsl.endsWith("[/col]\n[/row]\n"));
+  assert.deepEqual(lintDsl(fixed.dsl).errors, []);
+  const chaos = autofixDsl("[row][col][/col][/row][/card]"); // 多余闭合:不自动补
+  assert.equal(chaos.count, 0);
 });
 
 test("render: builds a self-contained HTML with the runtime inlined", () => {

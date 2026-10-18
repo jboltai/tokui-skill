@@ -62,7 +62,7 @@ agent 会从组件索引选型、按需查阅精确属性文档、写 DSL、校�
 
 | 脚本 | 用途 |
 |---|---|
-| `scripts/validate.mjs <文件.tokui\|文件.md\|->` | 校验 DSL（未闭合容器、未知组件、变体白名单、引号陷阱、图表属性顺序……）。可从 markdown 提取全部 ```tokui 围栏；有错误退出码 1；`--json` 输出机器可读结果。 |
+| `scripts/validate.mjs <文件.tokui\|文件.md\|->` | 校验 DSL（未闭合容器、未知组件、变体白名单、引号陷阱、图表属性顺序……）。可从 markdown 提取全部 ```tokui 围栏；有错误退出码 1；`--json` 输出机器可读结果；`--fix` 把确定性错误（标题值含空格未加引号）自动修回文件。 |
 | `scripts/render.mjs <文件…> -o out.html` | 生成自包含 HTML 报告。`--title` 标题、`--theme default\|dark\|modern\|modern-dark` 主题、`--runtime-dir` 指定自定义 TokUI dist。 |
 
 ## 为什么省上下文

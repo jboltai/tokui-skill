@@ -10,7 +10,7 @@ description: Render data & analysis results as rich interactive UI with TokUI DS
 ## 交付流程（写 → 校 → 渲 → 交）
 
 1. 把 DSL 写进 `<主题>.tokui` 文件（多段报告可写多个文件或一个文件多段；文件内不放围栏标记）。也可直接校验 markdown 里已有的 ```tokui 围栏（给 validate.mjs 传 .md 文件）。
-2. `node <skill-dir>/scripts/validate.mjs <文件>.tokui` 校验——有错必须修复后重跑，通过才算交付。
+2. `node <skill-dir>/scripts/validate.mjs <文件>.tokui` 校验——有错必须修复后重跑，通过才算交付。标题值含空格未加引号类确定性错误可加 `--fix` 直接自动修回文件（引号合并，其余内容逐字不动），修完仍须重跑校验至零错误。
 3. `node <skill-dir>/scripts/render.mjs <文件>.tokui -o <主题>.html [--title "标题"] [--theme default|dark|modern|modern-dark] [--shell auto|dashboard|report] [--open]` 生成自包含 HTML（运行时+CSS 全内联，离线可开、亮暗可切）。**各段根节点均为单块 `fit-screen`（数据大屏）时自动切全屏大屏壳**：满视口无边距、无报告头、主题切换钮悬浮角落，大屏按视口等比缩放铺满；多块大屏 = 多个输入文件（每屏一文件，逐屏满页）；`--shell` 可强制壳型。**大屏交付必须加 `--open`：生成后自动调本机默认浏览器直接打开**（macOS open / Linux xdg-open / Windows start，用户即刻看到全屏效果）。
 4. 交付：告知用户 HTML 路径与打开方式。回复正文 = 业务小标题 + 结尾业务总结（结论/风险/建议，不提技术）；面向非技术用户，正文不出现组件名/属性/DSL/布局术语，技术词汇与客套填充严禁进正文。同一报告只生成交付一次，严禁重复生成压缩版/重复版。**防御性围栏规则：仅当宿主明确支持聊天正文内联渲染 TokUI 时才可在正文输出 DSL，且必须逐段用 ```tokui 围栏包裹——裸写的 `[组件 …]` 行任何宿主都不会渲染，只会显示为源码文本；默认交付一律走 .tokui 文件 + HTML，正文不放 DSL。**
 
@@ -25,7 +25,7 @@ description: Render data & analysis results as rich interactive UI with TokUI DS
 1. 属性间空格分隔（CJK 全角字符后同）。
 2. 容器必须 `[/type]` 闭合；自闭合组件禁闭合标签。标题 `h1-h6` 正文与标签同行：`[h1 标题文字]`——**严禁 HTML 式 `[h1]文字[/h1]`**。**仅 `item` 与带正文 `p` 会被兄弟标签自动闭合**——`card`/`callout`/`list` 等不会：漏写 `[/card]` 时下一张卡会嵌套进上一张，必须显式闭合。**`ti`/`step` 正文写在开标签属性后（同标签一行）**：`[ti tm:"2024 下半年" t:info tt:"标题" 正文一句]`——严禁 `[/ti]` 与独立正文行；tm/tt 含空格必须引号。
 3. 变体必须 `v:` 前缀，多值 `v:"primary,sm"`；裸写变体名会变正文乱码。
-4. 值含空格/逗号/竖线双引号包（`tt:今日 GMV` 必须写 `tt:"今日 GMV"`）——引号只包单个值、成对关闭，严禁跨属性；正文含字面 `[` `]` 整段双引号；属性值里严禁塞组件标签；正文别写 `英文:值`（Q:/A:/step: 会被解析器当属性吞掉——用全角 `：` 或引号）；`input/pwd` 初值用 `val`（`v` 是变体）。
+4. 值含空格/逗号/竖线双引号包（中英混排标题最易漏：`tt:今日 GMV` 必须写 `tt:"今日 GMV"`，不引号会被空格切开、标题截断＋尾词变游离词报错；**数字与中文之间的空格同样切值**：`tt:大模型平台市场份额(2025E 估算)` 必须写 `tt:"大模型平台市场份额(2025E 估算)"`）——引号只包单个值、成对关闭，严禁跨属性；正文含字面 `[` `]` 整段双引号；属性值里严禁塞组件标签；正文别写 `英文:值`（Q:/A:/step: 会被解析器当属性吞掉——用全角 `：` 或引号）；`input/pwd` 初值用 `val`（`v` 是变体）。
 5. `card` 有子元素禁 `tx`；**`card` 裸正文非法**——正文写 `tx:`（叶子卡）或子元素 `[p]`。`p`/`item` 有正文=自闭合、无正文=容器。
 6. `tr` 单元格分隔必须**英文**逗号（中文逗号不切格、整行错位），**每行展开格数（含 `=cN`）必须 = thead 列数**：含英文逗号文本格双引号包（全角）；汇总行 `汇总=cN` 或整行 `=c总列数`；含 `btn:`/`tag:`/`progress v:`/`[xxx]` 内联组件格裸写即可（多钮 `|` 分隔、格内勿含英文逗号；行级 `id:`/`pid:` 写行首）；货币符号千分位免引号；操作列 `btn:动作 clk:fillSubmit data-prompt:动作:该行ID`；thead 列名含英文逗号 → cols 外层引号 + `\"` 转义。
 7. 布尔属性只写 key，无 false 值（想关就省略；仅 `upd` 支持 `xxx:false`）。
@@ -55,7 +55,7 @@ description: Render data & analysis results as rich interactive UI with TokUI DS
 ## 图表选型（意图→类型）
 趋势 line（可 area/smooth/vals）· 累计构成 area stack · **量+率双轴对比 combo（d 柱+d2 线+n1/n2+y2，勿拆两图）** · 占比 pie/donut（v:中心%）· 差异大占比 rose · 单值KPI/完成率 gauge v:N · 轻量进度 progress · 多维对比 radar（多系列|）· 分布相关 scatter · 三维含规模 bubble · 矩阵/时段密度 heatmap · 频次 histogram · 分布对比 boxplot · 增减累计 waterfall · 层级占比 treemap · 流转 sankey · K线 candlestick · 排期/依赖 gantt · 转化漏斗 funnel · **地域分布 map（region 省级热力+d 城市散点 TOP12 涟漪+topn:N 区域榜）** · 明细 table
 点数>30 加 `zoom:auto`；图表入 `[panel tt:]`（大屏）或 `[card tt:]`；`l` 数量=数据点数。
-**整页大屏**：`[fit-screen]` > `[grid h:100% areas theme:tech]` > `[screen-header]` 开头（渐变标题+时钟+LIVE）+ KPI 带（kpi pct:光条）+ panel×N（v:corner/scan，sub 英文副题，extra:"{高亮}"）+ rank-list 龙虎榜 + scrollboard 明细（胶囊格 tag:类型:文本）；氛围（光晕/网格/暗角/辉光）由 theme:tech 自动提供勿手写背景；完整范式见 references/patterns.md 模式五。
+**整页大屏（选型门槛：仅当用户明确要求「大屏／驾驶舱／指挥中心／监控墙／全屏呈现」时选用；默认一律报告流——「可视化／图表／数据分析」等普通措辞不是大屏需求，严禁切大屏）**：`[fit-screen]` > `[grid h:100% areas theme:tech]` > `[screen-header]` 开头（渐变标题+时钟+LIVE）+ KPI 带（kpi pct:光条）+ panel×N（v:corner/scan，sub 英文副题，extra:"{高亮}"）+ rank-list 龙虎榜 + scrollboard 明细（胶囊格 tag:类型:文本）；氛围（光晕/网格/暗角/辉光）由 theme:tech 自动提供勿手写背景；完整范式见 references/patterns.md 模式五。
 
 ## 组件索引（精确属性查 references/components.md）
 **text**：h1-h6 · p · a · img · imgs · preview-group · hr/dv · md · code · tag · kbd · b/strong/em/mark/del/sub/sup
