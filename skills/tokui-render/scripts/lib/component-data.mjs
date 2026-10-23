@@ -220,7 +220,7 @@ export const COMPONENTS = {
   tcol: { f: "table", d: "自闭合 | n | 列占位(thead 无 cols 时)" },
 
   // ── chart 图表 ──
-  chart: { f: "chart", d: "容器/自闭合 | t tt d l c w h v ... | ⚠属性顺序铁律 t→样式→l→d;系列色默认随主题色板自动切换(T0.5,暗色自动提亮,无需手动 c:),仅特殊品牌色才写 c:;grad 布尔=渐变填充(bar/area/donut);enter:'false' 关入场动画;22 种类型 t:bar/line/area/pie/donut/rose/funnel/radar/scatter/bubble/heatmap/histogram/waterfall/boxplot/treemap/sankey/candlestick/progress/gauge/map/combo;map(中国地图:region:'浙江:86|江苏:74' 省级热力 34省含港澳台+d:'lng,lat,val,name:城市' 散点 值TOP12自动涟漪(ripple:off 关);topn:5 左下自动区域TOP榜;label:full|name|off 标注三档;unit 单位;hover多行tooltip+高亮;点击省份 on:'mapClick:handler' 上报;vmin/vmax 锁色阶+自带 visualMap 色阶条/南海诸岛小图);combo(双轴组合图:d 柱左轴+d2 线右轴+n1/n2 系列名+y2 右轴单位,趋势+增速面板标配);无 d 时容器模式收 pt/hrow/flow/task/ms。完整数据格式见 references/chart.md" },
+  chart: { f: "chart", d: "容器/自闭合 | t tt d l sn c w h v ... | ⚠属性顺序铁律 t→样式→l/sn→d;多系列(d 带 |)必配 sn:'名1,名2,...'命名系列(进图例/tooltip,缺省回退「系列N」占位名);系列色默认随主题色板自动切换(T0.5,暗色自动提亮,无需手动 c:),仅特殊品牌色才写 c:;grad 布尔=渐变填充(bar/area/donut);enter:'false' 关入场动画;22 种类型 t:bar/line/area/pie/donut/rose/funnel/radar/scatter/bubble/heatmap/histogram/waterfall/boxplot/treemap/sankey/candlestick/progress/gauge/map/combo;map(中国地图:region:'浙江:86|江苏:74' 省级热力 34省含港澳台+d:'lng,lat,val,name:城市' 散点 值TOP12自动涟漪(ripple:off 关);topn:5 左下自动区域TOP榜;label:full|name|off 标注三档;unit 单位;hover多行tooltip+高亮;点击省份 on:'mapClick:handler' 上报;vmin/vmax 锁色阶+自带 visualMap 色阶条/南海诸岛小图);combo(双轴组合图:d 柱左轴+d2 线右轴+n1/n2 系列名(优先)或 sn 缺省名+y2 右轴单位,趋势+增速面板标配);无 d 时容器模式收 pt/hrow/flow/task/ms。完整数据格式见 references/chart.md" },
   pt: { f: "chart", d: "自闭合 | v | chart 容器模式点子节点" },
   hrow: { f: "chart", d: "自闭合 | v | heatmap 行子节点 v,v,v" },
   flow: { f: "chart", d: "自闭合 | v | sankey 子节点 源->目标:值" },

@@ -54,7 +54,7 @@ description: Render data & analysis results as rich interactive UI with TokUI DS
 
 ## 图表选型（意图→类型）
 趋势 line（可 area/smooth/vals）· 累计构成 area stack · **量+率双轴对比 combo（d 柱+d2 线+n1/n2+y2，勿拆两图）** · 占比 pie/donut（v:中心%）· 差异大占比 rose · 单值KPI/完成率 gauge v:N · 轻量进度 progress · 多维对比 radar（多系列|）· 分布相关 scatter · 三维含规模 bubble · 矩阵/时段密度 heatmap · 频次 histogram · 分布对比 boxplot · 增减累计 waterfall · 层级占比 treemap · 流转 sankey · K线 candlestick · 排期/依赖 gantt · 转化漏斗 funnel · **地域分布 map（region 省级热力+d 城市散点 TOP12 涟漪+topn:N 区域榜）** · 明细 table
-点数>30 加 `zoom:auto`；图表入 `[panel tt:]`（大屏）或 `[card tt:]`；`l` 数量=数据点数。
+点数>30 加 `zoom:auto`；图表入 `[panel tt:]`（大屏）或 `[card tt:]`；`l` 数量=数据点数。**多系列（`d` 带 `|`）一律配 `sn:"名1,名2,..."` 命名系列**（进图例/tooltip，缺省显示「系列1/系列2」占位名——生成正式报告时严禁留占位名）。
 **整页大屏（选型门槛：仅当用户明确要求「大屏／驾驶舱／指挥中心／监控墙／全屏呈现」时选用；默认一律报告流——「可视化／图表／数据分析」等普通措辞不是大屏需求，严禁切大屏）**：`[fit-screen]` > `[grid h:100% areas theme:tech]` > `[screen-header]` 开头（渐变标题+时钟+LIVE）+ KPI 带（kpi pct:光条）+ panel×N（v:corner/scan，sub 英文副题，extra:"{高亮}"）+ rank-list 龙虎榜 + scrollboard 明细（胶囊格 tag:类型:文本）；氛围（光晕/网格/暗角/辉光）由 theme:tech 自动提供勿手写背景；完整范式见 references/patterns.md 模式五。
 
 ## 组件索引（精确属性查 references/components.md）

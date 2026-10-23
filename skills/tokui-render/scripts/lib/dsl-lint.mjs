@@ -963,6 +963,40 @@ function checkSelfClosingTag(name, parsed, line, errors, warnings) {
       }
     }
 
+    // sn 系列名专项(多系列命名):多系列缺 sn → 图例/tooltip 只能显示占位名「系列N」;
+    // 名数≠系列数 → 不足的系列逐个回退占位名;中文逗号不切分 → 名坍缩;sn 排 d 后 → 流式预览图例名翻转
+    const SN_TYPES = new Set(["bar", "line", "area", "radar", "donut", "combo"]);
+    const snv = attrValue(attrs, "sn");
+    const snDv = attrValue(attrs, "d");
+    if (snv && snv.includes("，")) {
+      errors.push({
+        line,
+        msg: "chart sn: 的分隔必须英文逗号——检测到中文逗号「，」(不切分,系列名坍缩成 1 个)。把分隔位置的，改成,",
+      });
+    }
+    if (SN_TYPES.has(t) && snDv && snDv.includes("|")) {
+      const seriesCount = snDv.split("|").filter(Boolean).length;
+      const namedCount = snv ? snv.split(",").filter((x) => x.trim()).length : 0;
+      // combo 的 n1/n2 已承担双系列命名:显式给了 n1/n2 就不再催 sn(多柱系列仍建议 sn 补位)
+      const hasN12 = t === "combo" && (attrValue(attrs, "n1") !== undefined || attrValue(attrs, "n2") !== undefined);
+      if (!snv && !hasN12) {
+        const hint = t === "combo" ? "(combo 优先用 n1/n2,缺省回退 sn)" : "";
+        warnings.push({
+          line,
+          msg: `chart t:${t} 是多系列(${seriesCount} 系列)但缺 sn: 系列名——图例/tooltip 只能显示占位名「系列1、系列2…」。加 sn:"名1,名2,…" 命名系列${hint}`,
+        });
+      } else if (namedCount !== seriesCount) {
+        warnings.push({
+          line,
+          msg: `chart sn: 名数(${namedCount})≠ 系列数(${seriesCount})——不足的系列回退占位名「系列N」、多余的忽略;每个系列对应一个名`,
+        });
+      }
+    }
+    const snPos = attrPos(attrs, (a) => /^sn:/.test(a));
+    if (snPos !== -1 && dataPos !== -1 && snPos > dataPos) {
+      warnings.push({ line, msg: "chart sn: 应写在 d: 之前(同 l 标签段)——排后则流式预览图例先显占位名「系列N」,闭合时才翻转成实名" });
+    }
+
     // map 专项(0.2.5):label 三档白名单;region 省名:值 全角冒号不切分 → 整段静默失配
     if (t === "map") {
       const labelV = attrValue(attrs, "label");
