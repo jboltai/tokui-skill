@@ -66,7 +66,7 @@ description: Render data & analysis results as rich interactive UI with TokUI DS
 **layout**：card · ft · row/col · grid/cell · list/item · tabs/tab · accordion/collapse · timeline/ti · steps/step · desc · tree/tn · menu/menu-item · resizable · scroll-area · sidebar · anchor · affix · masonry · float-button · print-area · page/page-header/page-sidebar/page-content/page-tabs/page-tab · reveal/reveal-item · panel/kpi/screen-header/rank-list/fit-screen/scrollboard（大屏）
 **form**：form · input/pwd/textarea · select/radio/checkbox/opt · switch/slider/rate/numinput · segmented · editable · color-picker · btn/btngroup · picker/cascader/transfer · upload · datepicker/timepicker/datetimepicker
 **table**：table/thead/tbody/tr/tcol
-**chart**：chart 21 种（数据格式见 references/chart.md；容器模式 pt/hrow/flow/task/ms）
+**chart**：chart 22 种（数据格式见 references/chart.md；容器模式 pt/hrow/flow/task/ms）
 
 ## 动态与交互
 - 可更新组件加 `id`：`[upd id:x v:50]` 更新 · `[del id:x]` 删除（`delay:3000` 延迟）· `[ins after:x]…[/ins]` 插入；计划推进 `[upd id:step1 status:doing]`。

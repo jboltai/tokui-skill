@@ -1,4 +1,4 @@
-# chart 完整参考(22 种,纯 SVG 零依赖)
+# chart 完整参考(23 种,纯 SVG 零依赖)
 
 **属性顺序铁律:`t 类型 → 样式/布局 → l 标签/sn 系列名 → 数据`**(违反则流式预览翻转)。
 
@@ -6,7 +6,7 @@
 
 | 属性 | 含义 |
 |---|---|
-| `t` | 图表类型(恒首):bar line area pie donut rose funnel radar scatter bubble heatmap histogram waterfall boxplot treemap sankey candlestick progress gauge gantt map combo |
+| `t` | 图表类型(恒首):bar line area pie donut rose funnel radar scatter bubble heatmap histogram waterfall boxplot treemap sankey candlestick wordcloud progress gauge gantt map combo |
 | `tt` | 标题 |
 | `d` | 数据(格式见下表) |
 | `l` | 标签(数量必须 = 数据点/类别数) |
@@ -33,6 +33,7 @@
 | candlestick | 根`;`、OHLC`,` | `d:"10,12,8,11;11,13,9,10"` |
 | heatmap | `rows` 属性:行`\|`、列`,` | `rows:"1,2,3\|4,5,6"` + `cols` 列标签 + `l` 行标签 |
 | treemap | `名:值`,` | `d:"A:100,B:60"` |
+| wordcloud | `词:权重`,` | `d:"AI:100,Agent:82"` |
 | sankey | `flows` 属性:`源->目标:值`,` | `flows:"A->B:10,B->C:5"` |
 | gauge progress | `v` 单值 | `v:72` |
 
@@ -48,6 +49,7 @@
 - **waterfall**:`d` 带符号增减;`c` 前 2 个为正/负色。
 - **candlestick**:`l` 日期;`c` 阳/阴色(默认红涨绿跌)。
 - **treemap/sankey**:`c` 配色;sankey `nodes` 可省(从 flows 提)。
+- **wordcloud**:字号∝权重、螺线碰撞布局、确定性渲染(流式词位不跳)、每第3词竖排;放不下缩字号、最小字号仍放不下弃词;`c` 词色。
 - **map(中国地图)**:不用 `d` 轴系/`l`——见下方专节;地域分布/区域指标首选。
 
 ## map 中国地图(地域分布首选)

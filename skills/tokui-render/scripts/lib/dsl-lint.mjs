@@ -931,7 +931,7 @@ function checkSelfClosingTag(name, parsed, line, errors, warnings) {
   if (name === "chart") {
     const t = attrValue(attrs, "t");
     if (t !== undefined && !CHART_TYPES.has(t)) {
-      errors.push({ line, msg: `未知图表类型 t:${t} —— 仅支持 22 种(bar/line/area/pie/donut/rose/funnel/radar/scatter/bubble/heatmap/histogram/waterfall/boxplot/treemap/sankey/candlestick/progress/gauge/gantt/map/combo)` });
+      errors.push({ line, msg: `未知图表类型 t:${t} —— 仅支持 23 种(bar/line/area/pie/donut/rose/funnel/radar/scatter/bubble/heatmap/histogram/waterfall/boxplot/treemap/sankey/candlestick/wordcloud/progress/gauge/gantt/map/combo)` });
     }
     // combo 专项:d2 缺失退化为纯柱(可能非本意);d2 含中文逗号同样坍缩
     if (t === "combo") {
