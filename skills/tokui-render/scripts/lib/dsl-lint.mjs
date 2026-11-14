@@ -997,6 +997,41 @@ function checkSelfClosingTag(name, parsed, line, errors, warnings) {
       warnings.push({ line, msg: "chart sn: 应写在 d: 之前(同 l 标签段)——排后则流式预览图例先显占位名「系列N」,闭合时才翻转成实名" });
     }
 
+    // tips 逐点明细专项(0.3.2):中文分号/竖线不切分 → 明细整段坍缩;点数≠数据点数 → 对齐错位;
+    // tips 排 d 后 → 流式预览明细闭合才出现;不支持类型 → 明细静默丢失
+    const TIPS_TYPES = new Set(["bar", "line", "area", "combo", "pie", "donut"]);
+    const tipsv = attrValue(attrs, "tips");
+    if (tipsv !== undefined) {
+      if (/[；｜]/.test(tipsv)) {
+        errors.push({
+          line,
+          msg: "chart tips: 的分隔必须半角——检测到中文分号「；」或中文竖线「｜」(不切分,明细整段坍缩成一行/一点)。把；改成;、｜改成|",
+        });
+      }
+      if (t !== undefined && !TIPS_TYPES.has(t)) {
+        warnings.push({
+          line,
+          msg: `chart t:${t} 不支持 tips: 逐点明细(仅 bar/line/area/combo/pie/donut 支持)——该属性会被静默忽略,明细请放 table`,
+        });
+      }
+      // 点数对齐:优先用 l 标签数(l 必=数据点数),无 l 用 d 首系列点数
+      const lCnt = attrValue(attrs, "l") ? String(attrValue(attrs, "l")).split(",").filter((x) => x.trim()).length : 0;
+      const dv0 = attrValue(attrs, "d");
+      const dCnt = dv0 ? String(dv0).split("|")[0].split(",").filter((x) => x.trim()).length : 0;
+      const pointCnt = lCnt || dCnt;
+      const tipsCnt = String(tipsv).split("|").filter((x) => x.trim()).length;
+      if (pointCnt && tipsCnt !== pointCnt) {
+        warnings.push({
+          line,
+          msg: `chart tips: 点数(${tipsCnt})≠ 数据点数(${pointCnt})——多余忽略、缺失的点 hover 无明细,通常是明细与点错位;每个数据点对应一段,不需要明细的点留空段(如 tips:"a;b||c;d")`,
+        });
+      }
+      const tipsPos = attrPos(attrs, (a) => /^tips:/.test(a));
+      if (tipsPos !== -1 && dataPos !== -1 && tipsPos > dataPos) {
+        warnings.push({ line, msg: "chart tips: 应写在 d: 之前(同 l/sn 标签段)——排后则流式预览 hover 明细闭合才出现" });
+      }
+    }
+
     // map 专项(0.2.5):label 三档白名单;region 省名:值 全角冒号不切分 → 整段静默失配
     if (t === "map") {
       const labelV = attrValue(attrs, "label");
@@ -1055,6 +1090,14 @@ function checkSelfClosingTag(name, parsed, line, errors, warnings) {
     // zoom 仅纵向 bar/line/area/boxplot/candlestick 支持
     if (attrValue(attrs, "zoom") !== undefined && (t === "histogram" || (t === "bar" && attrValue(attrs, "orient") === "h"))) {
       warnings.push({ line, msg: `chart t:${t}${t === "bar" ? " orient:h" : ""} 不支持 zoom(横柱/直方图无 dataZoom)——删掉 zoom,或改纵向柱` });
+    }
+    // xvertical 竖排值域:auto(默认,CJK 标签自动竖排)/on(强制)/off(关闭);true/false/1/0 同义容错
+    const xvVal = attrValue(attrs, "xvertical");
+    if (xvVal !== undefined) {
+      const xvs = String(xvVal).toLowerCase();
+      if (!["auto", "on", "off", "true", "false", "1", "0", ""].includes(xvs)) {
+        warnings.push({ line, msg: `chart xvertical:${xvVal} 无效值——仅 auto(默认,全部标签为 CJK 文字时自动竖排)/on(强制竖排)/off(关闭)` });
+      }
     }
     // gantt:tasks 字段数 / deps 索引越界 / 组号配 gnames
     if (t === "gantt") {

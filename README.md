@@ -82,7 +82,7 @@ skills/tokui-render/        ← the portable skill (copy or symlink this folder)
   scripts/validate.mjs      standalone DSL linter (CLI)
   scripts/render.mjs        standalone HTML report builder (CLI)
   scripts/lib/              component-data.mjs (source of truth) · dsl-lint.mjs
-  assets/                   tokui.umd.js + tokui.css (bundled runtime, byte-identical to npm @jboltai/tokui 0.2.7)
+  assets/                   tokui.umd.js + tokui.css (bundled runtime, byte-identical to npm @jboltai/tokui 0.3.2)
 tools/build-references.mjs  regenerates components.md from component-data.mjs
 test/                       smoke tests for the CLIs + SKILL.md contract
 ```
@@ -94,7 +94,7 @@ npm test                    # node --test over test/
 npm run build:references    # regenerate references/components.md
 ```
 
-**Syncing with @jboltai/tokui**: `skills/tokui-render/scripts/lib/component-data.mjs` is the single source of truth for component knowledge; when a new tokui ships, update it, refresh `assets/` from the package's `dist/`, re-run `build:references`, and bump the version to match the runtime (this repo: 0.2.7 ↔ @jboltai/tokui 0.2.7).
+**Syncing with @jboltai/tokui**: `skills/tokui-render/scripts/lib/component-data.mjs` is the single source of truth for component knowledge; when a new tokui ships, update it, refresh `assets/` from the package's `dist/`, re-run `build:references`, and bump the version to match the runtime (this repo: 0.3.2 ↔ @jboltai/tokui 0.3.2).
 
 ## License
 

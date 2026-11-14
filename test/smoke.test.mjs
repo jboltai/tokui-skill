@@ -176,3 +176,43 @@ test("references: the four deep docs exist and are non-trivial", () => {
 after(() => {
   rmSync(tmp, { recursive: true, force: true });
 });
+
+// xvertical 竖排值域校验（v0.3.1 四级降级配套）
+test("lint: chart xvertical 合法值静默通过，非法值警告", () => {
+  for (const v of ["auto", "on", "off"]) {
+    const r = lintDsl(`[chart t:bar xvertical:${v} tt:"部门产能" l:"研发,市场" d:"5,8"]`);
+    assert.deepEqual(r.errors, [], v);
+    assert.deepEqual(r.warnings, [], v);
+  }
+  const bad = lintDsl('[chart t:bar xvertical:maybe tt:"部门产能" l:"研发,市场" d:"5,8"]');
+  assert.ok(bad.warnings.some((w) => w.msg.includes("xvertical")), "应出 xvertical 无效值警告");
+});
+
+// tips 逐点明细专项（v0.3.2 配套）：中文分隔符 / 点数对齐 / 类型覆盖 / 属性顺序
+test("lint: chart tips 合法用法静默通过", () => {
+  const r = lintDsl('[chart t:bar tt:"爆款" l:"A,B" tips:"款号 A11;颜色 深黑|款号 B22;颜色 白" d:"320,286"]');
+  assert.deepEqual(r.errors, [], "errors");
+  assert.deepEqual(r.warnings, [], "warnings");
+});
+
+test("lint: chart tips 中文分号/竖线 → error（明细坍缩）", () => {
+  const r1 = lintDsl('[chart t:bar l:"A,B" tips:"行1；行2|行3" d:"5,8"]');
+  assert.ok(r1.errors.some((e) => e.msg.includes("tips") && e.msg.includes("半角")), "中文分号应报 error");
+  const r2 = lintDsl('[chart t:bar l:"A,B" tips:"行1｜行2" d:"5,8"]');
+  assert.ok(r2.errors.some((e) => e.msg.includes("tips")), "中文竖线应报 error");
+});
+
+test("lint: chart tips 点数≠数据点数 → 警告", () => {
+  const r = lintDsl('[chart t:bar l:"A,B,C" tips:"x1;x2|y1" d:"5,8,9"]');
+  assert.ok(r.warnings.some((w) => w.msg.includes("tips") && w.msg.includes("数据点数")), "点数不齐应警告");
+});
+
+test("lint: chart tips 不支持类型 → 警告", () => {
+  const r = lintDsl('[chart t:gauge l:"A" tips:"明细" v:72]');
+  assert.ok(r.warnings.some((w) => w.msg.includes("不支持 tips")), "gauge 应警告不支持");
+});
+
+test("lint: chart tips 排 d 后 → 顺序警告", () => {
+  const r = lintDsl('[chart t:bar l:"A,B" d:"5,8" tips:"x1|y1"]');
+  assert.ok(r.warnings.some((w) => w.msg.includes("tips: 应写在 d: 之前")), "tips 排 d 后应警告");
+});

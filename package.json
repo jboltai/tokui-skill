@@ -1,6 +1,6 @@
 {
   "name": "@jboltai/tokui-skill",
-  "version": "0.2.8",
+  "version": "0.2.9",
   "description": "Standalone Agent Skill: render data & analysis as rich interactive UI with TokUI DSL — works in Claude Code and any agent platform supporting the Agent Skills standard",
   "type": "module",
   "license": "MIT",

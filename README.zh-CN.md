@@ -82,7 +82,7 @@ skills/tokui-render/        ← 可移植技能（拷贝或软连接这个目录
   scripts/validate.mjs      独立 DSL 校验 CLI
   scripts/render.mjs        独立 HTML 报告生成 CLI
   scripts/lib/              component-data.mjs（唯一事实源）· dsl-lint.mjs
-  assets/                   tokui.umd.js + tokui.css（内置运行时，与 npm @jboltai/tokui 0.2.7 逐字节一致）
+  assets/                   tokui.umd.js + tokui.css（内置运行时，与 npm @jboltai/tokui 0.3.2 逐字节一致）
 tools/build-references.mjs  从 component-data.mjs 重新生成 components.md
 test/                       CLI 与 SKILL.md 契约的冒烟测试
 ```
@@ -94,7 +94,7 @@ npm test                    # node --test 跑 test/
 npm run build:references    # 重新生成 references/components.md
 ```
 
-**与 @jboltai/tokui 同步**：`skills/tokui-render/scripts/lib/component-data.mjs` 是组件知识的唯一事实源；新版本 tokui 发布后更新它、用包内 `dist/` 刷新 `assets/`、重跑 `build:references`，并把版本号对齐运行时（本仓库 0.2.7 ↔ @jboltai/tokui 0.2.7）。
+**与 @jboltai/tokui 同步**：`skills/tokui-render/scripts/lib/component-data.mjs` 是组件知识的唯一事实源；新版本 tokui 发布后更新它、用包内 `dist/` 刷新 `assets/`、重跑 `build:references`，并把版本号对齐运行时（本仓库 0.3.2 ↔ @jboltai/tokui 0.3.2）。
 
 ## 许可
 
